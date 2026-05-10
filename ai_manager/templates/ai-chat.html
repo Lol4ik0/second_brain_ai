@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second Brain - AI Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="app-wrapper">
+
+        <aside class="main-sidebar">
+            <header class="branding">
+                <h1>Second Brain</h1>
+                <p>Knowledge Manager</p>
+            </header>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="notes.html">Notes</a></li>
+                    <li><a href="tasks.html">Tasks</a></li>
+                    <li class="active"><a href="ai-chat.html">AI Chat</a></li>
+                    <li><a href="settings.html">Settings</a></li>
+                </ul>
+            </nav>
+
+            <div class="storage-indicator">
+                <p>Storage Used</p>
+                <progress value="7.5" max="10">7.5 GB</progress>
+                <p><small>7.5 GB of 10 GB</small></p>
+            </div>
+        </aside>
+
+        <main class="ai-chat-workspace">
+
+            <aside class="chat-context-panel">
+                <header>
+                    <h2>Context</h2>
+                    <p class="subtitle">Documents being analyzed</p>
+                </header>
+
+                <ul class="context-document-list">
+                    <li class="document-card">
+                        <span class="doc-icon" aria-hidden="true">📄</span>
+                        <div class="doc-details">
+                            <span class="doc-title">Neural Networks.md</span>
+                            <span class="doc-type">note</span>
+                        </div>
+                    </li>
+                    <li class="document-card">
+                        <span class="doc-icon" aria-hidden="true">📄</span>
+                        <div class="doc-details">
+                            <span class="doc-title">AI Development Roadmap.md</span>
+                            <span class="doc-type">note</span>
+                        </div>
+                    </li>
+                    <li class="document-card">
+                        <span class="doc-icon" aria-hidden="true">📄</span>
+                        <div class="doc-details">
+                            <span class="doc-title">Research Paper - Transformers.pdf</span>
+                            <span class="doc-type">pdf</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <button type="button" class="btn-add-context">
+                    + Add Documents
+                </button>
+
+                <article class="ai-model-info">
+                    <h3><span aria-hidden="true">✨</span> AI Model</h3>
+                    <p class="model-name">GPT-4 Turbo</p>
+                    
+                    <dl class="model-stats">
+                        <dt>Context window</dt>
+                        <dd class="text-cyan">128k tokens</dd>
+                        
+                        <dt>Temperature</dt>
+                        <dd class="text-cyan">0.7</dd>
+                    </dl>
+                </article>
+            </aside>
+
+            <section class="chat-interface">
+                <header class="chat-header">
+                    <h2>AI Chat</h2>
+                    <p class="subtitle">Ask questions about your knowledge base</p>
+                </header>
+
+                <div class="chat-feed">
+                    
+                    <article class="message ai-message">
+                        <div class="message-avatar">✨</div>
+                        <div class="message-bubble">
+                            <p>Hello! I'm your AI assistant. I've analyzed the 3 documents you've selected. What would you like to know?</p>
+                        </div>
+                    </article>
+
+                    </div>
+
+                <form class="chat-input-form">
+                    <div class="input-wrapper">
+                        <textarea placeholder="Ask your Second Brain..." rows="1" id="chat-input"></textarea>
+                        
+                        <div class="input-footer">
+                            <span class="keyboard-hint">Press <kbd>Enter</kbd> to send, <kbd>Shift</kbd>+<kbd>Enter</kbd> for new line</span>
+                            <button type="submit" class="btn-send" aria-label="Send message">
+                                <span aria-hidden="true">➤</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

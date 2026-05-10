@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second Brain - Neural Networks Note</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="app-wrapper">
+
+        <aside class="main-sidebar">
+            <header class="branding">
+                <h1>Second Brain</h1>
+                <p>Knowledge Manager</p>
+            </header>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li class="active"><a href="notes.html">Notes</a></li>
+                    <li><a href="tasks.html">Tasks</a></li>
+                    <li><a href="ai-chat.html">AI Chat</a></li>
+                    <li><a href="settings.html">Settings</a></li>
+                </ul>
+            </nav>
+
+            <div class="storage-indicator">
+                <p>Storage Used</p>
+                <progress value="7.5" max="10">7.5 GB</progress>
+                <p><small>7.5 GB of 10 GB</small></p>
+            </div>
+        </aside>
+
+        <main class="notes-workspace">
+
+            <section class="file-explorer-column">
+                <header>
+                    <h2>NOTES</h2>
+                </header>
+                
+                <nav class="directory-tree">
+                    <ul>
+                        <li class="folder open">
+                            <span class="folder-name">AI & Machine Learning</span>
+                            <ul class="folder-contents">
+                                <li class="file active-file">Neural Networks</li>
+                                <li class="file">Transformers Architecture</li>
+                                <li class="file">Reinforcement Learning</li>
+                            </ul>
+                        </li>
+                        
+                        <li class="folder closed">
+                            <span class="folder-name">Projects</span>
+                            <ul class="folder-contents">
+                                <li class="file">Second Brain App</li>
+                                <li class="file">Portfolio Website</li>
+                            </ul>
+                        </li>
+                        
+                        <li class="folder closed">
+                            <span class="folder-name">Personal</span>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
+
+            <article class="editor-column">
+                <header class="note-header">
+                    <h1>Neural Networks</h1>
+                    <p class="meta-data">Last edited: 2 hours ago</p>
+                </header>
+
+                <div class="markdown-content">
+                    <h2>Introduction</h2>
+                    <p>Neural networks are the foundation of modern <strong>deep learning</strong> systems. They consist of layers of interconnected nodes that process information in a way inspired by biological neurons.</p>
+
+                    <h2>Architecture</h2>
+                    <p>A typical neural network consists of:</p>
+                    <ul>
+                        <li><strong>Input Layer</strong> - receives the raw data</li>
+                        <li><strong>Hidden Layers</strong> - process and transform the data</li>
+                        <li><strong>Output Layer</strong> - produces the final prediction</li>
+                    </ul>
+
+                    <h2>Related Concepts</h2>
+                    <p>For more information, see <a href="#deep-learning" class="wiki-link">[[Deep Learning Fundamentals]]</a></p>
+                </div>
+            </article>
+
+            <aside class="linked-mentions-column">
+                <header>
+                    <h3>LINKED MENTIONS</h3>
+                    <p class="subtitle">3 notes link to this page</p>
+                </header>
+
+                <div class="mentions-list">
+                    <article class="mention-card">
+                        <h4>Deep Learning Fundamentals</h4>
+                        <p>mentions neural networks architecture</p>
+                    </article>
+
+                    <article class="mention-card">
+                        <h4>AI Development Roadmap</h4>
+                        <p>links to neural network research</p>
+                    </article>
+
+                    <article class="mention-card">
+                        <h4>PyTorch Tutorial</h4>
+                        <p>references neural network implementation</p>
+                    </article>
+                </div>
+            </aside>
+
+            <button class="fab-chat-button" aria-label="Open AI Chat">
+                <span class="icon-chat">💬</span>
+            </button>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
