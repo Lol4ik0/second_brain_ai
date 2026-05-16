@@ -1,0 +1,22 @@
+<aside class="main-sidebar">
+    <header class="branding">
+        <h1>Second Brain</h1>
+        <p>Knowledge Manager</p>
+    </header>
+
+    <nav class="main-nav">
+        <ul>
+            <li class="{% if active == 'home' %}active{% endif %}"><a href="home.html">Home</a></li>
+            <li class="{% if active == 'notes' %}active{% endif %}"><a href="notes.html">Notes</a></li>
+            <li class="{% if active == 'tasks' %}active{% endif %}"><a href="tasks.html">Tasks</a></li>
+            <li class="{% if active == 'ai-chat' %}active{% endif %}"><a href="ai-chat.html">AI Chat</a></li>
+            <li class="{% if active == 'settings' %}active{% endif %}"><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="storage-indicator">
+        <p>Storage Used</p>
+        <progress value="7.5" max="10">7.5 GB</progress>
+        <p><small>7.5 GB of 10 GB</small></p>
+    </div>
+</aside>

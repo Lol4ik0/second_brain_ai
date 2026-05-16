@@ -1,37 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Second Brain - Knowledge Manager</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
 
     <div id="app-container">
 
-        <aside class="main-sidebar">
-            <header class="branding">
-                <h1>Second Brain</h1>
-                <p>Knowledge Manager</p>
-            </header>
-
-            <nav class="main-nav">
-                <ul>
-                    <li class="active"><a href="home.html">Home</a></li>
-                    <li><a href="notes.html">Notes</a></li>
-                    <li><a href="tasks.html">Tasks</a></li>
-                    <li><a href="ai-chat.html">AI Chat</a></li>
-                    <li><a href="settings.html">Settings</a></li>
-                </ul>
-            </nav>
-
-            <div class="storage-indicator">
-                <p>Storage Used</p>
-                <progress value="7.5" max="10">7.5 GB</progress>
-                <p><small>7.5 GB of 10 GB</small></p>
-            </div>
-        </aside>
+        {% include "sidebar.html" with active="home" %}
 
         <main id="main-content">
 
