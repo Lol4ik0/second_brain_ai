@@ -6,11 +6,11 @@
 
     <nav class="main-nav">
         <ul>
-            <li class="{% if active == 'home' %}active{% endif %}"><a href="home.html">Home</a></li>
-            <li class="{% if active == 'notes' %}active{% endif %}"><a href="notes.html">Notes</a></li>
-            <li class="{% if active == 'tasks' %}active{% endif %}"><a href="tasks.html">Tasks</a></li>
-            <li class="{% if active == 'ai-chat' %}active{% endif %}"><a href="ai-chat.html">AI Chat</a></li>
-            <li class="{% if active == 'settings' %}active{% endif %}"><a href="settings.html">Settings</a></li>
+            <li class="{% if active == 'notes' %}active{% endif %}"><a href="{% url 'notes' %}">Notes</a></li>
+            <li class="{% if active == 'home' %}active{% endif %}"><a href="{% url 'home' %}">Home</a></li>
+            <li class="{% if active == 'ai-chat' %}active{% endif %}"><a href="{% url 'chat' %}">AI Chat</a></li>
+            <li class="{% if active == 'settings' %}active{% endif %}"><a href="{% url 'settings' %}">Settings</a></li>
+            <li class="{% if active == 'tasks' %}active{% endif %}"><a href="{% url 'tasks' %}">Tasks</a></li>
         </ul>
     </nav>
 

@@ -244,3 +244,195 @@ progress::-webkit-progress-value {
     border-radius: 3px;
     box-shadow: 0 0 8px var(--neon-cyan);
 }
+
+/* ==========================================================================
+   9. LAYOUTS & GRIDS (Расположение элементов как в Figma)
+   ========================================================================== */
+
+/* Дашборд: 3 виджета в ряд */
+.dashboard-widgets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 одинаковые колонки */
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Канбан доска: 3 колонки (To Do, In Progress, Done) */
+.kanban-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.kanban-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.kanban-column h4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Страница Заметок: 3 колонки (Дерево, Редактор, Связи) */
+.notes-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr 250px; /* Боковые панели по 250px, центр занимает остаток */
+    gap: 2rem;
+    height: 100%;
+}
+
+/* Страница Чат-ИИ: Контекст слева, Чат справа */
+.chat-layout-split {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    height: 100%;
+}
+
+/* Убираем маркеры списков для чистоты */
+ul.task-list, ul.notes-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+ul.task-list li, ul.notes-list li {
+    margin-bottom: 0.8rem;
+}
+
+/* ==========================================================================
+   10. PAGE HEADER & SEARCH
+   ========================================================================== */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.search-container {
+    margin-top: 1rem;
+}
+
+.search-container input {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* ==========================================================================
+   11. PROJECT BOARD
+   ========================================================================== */
+.project-board {
+    margin-top: 3rem;
+}
+
+.project-board h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   12. KANBAN CARDS & STYLING
+   ========================================================================== */
+.kanban-card p {
+    margin: 0 0 0.8rem 0;
+    color: var(--text-primary);
+}
+
+.kanban-card .tag {
+    margin-bottom: 0;
+}
+
+.kanban-column h4 .count {
+    color: var(--neon-cyan);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   13. WIDGET CONTENT STYLING
+   ========================================================================== */
+.widget h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.widget input[type="checkbox"] {
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.widget label {
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.widget label:hover {
+    color: var(--neon-cyan);
+}
+
+.task-list li input[type="checkbox"]:checked + label {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+.notes-list strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.notes-list small {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   14. BUTTON STYLING VARIANTS
+   ========================================================================== */
+.btn-primary {
+    color: var(--neon-cyan);
+    border: 1px solid var(--neon-cyan);
+    background: transparent;
+}
+
+.btn-primary:hover {
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: var(--glow-cyan);
+}
+
+.btn-outline-cyan {
+    color: var(--neon-cyan);
+    border: 1px solid var(--neon-cyan);
+}
+
+.btn-outline-cyan:hover {
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: var(--glow-cyan);
+}
+
+.btn-outline-danger {
+    color: var(--neon-red);
+    border: 1px solid var(--neon-red);
+}
+
+.btn-outline-danger:hover {
+    background: rgba(255, 42, 95, 0.1);
+    box-shadow: 0 0 10px rgba(255, 42, 95, 0.3);
+}
