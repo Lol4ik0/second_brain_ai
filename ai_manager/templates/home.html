@@ -1,264 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Second Brain - Knowledge Manager</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}
+  Second Brain - Knowledge Manager
+{% endblock %}
+{% block content %}
+  {% set active_page = 'home' %}
 
-    <div id="app-container">
+  <main id="main-content">
+    <section id="view-home">
+      <header class="page-header">
+        <h2>Welcome back</h2>
+        <p>Here's what's happening with your second brain today</p>
+        <div class="search-container">
+          <input type="search" placeholder="Search notes, tasks, or ask AI..." />
+        </div>
+      </header>
 
-        {% include "sidebar.html" with active="home" %}
+      <div class="dashboard-widgets">
+        <article class="widget">
+          <h3>Today's Tasks</h3>
+          <ul class="task-list">
+            <li>
+              <input type="checkbox" id="task1" /> <label for="task1">Review project proposal</label>
+            </li>
+            <li>
+              <input type="checkbox" id="task2" checked /> <label for="task2"><del>Update documentation</del></label>
+            </li>
+            <li>
+              <input type="checkbox" id="task3" /> <label for="task3">Team standup meeting</label>
+            </li>
+            <li>
+              <input type="checkbox" id="task4" /> <label for="task4">Code review for PR #234</label>
+            </li>
+          </ul>
+        </article>
 
-        <main id="main-content">
+        <article class="widget">
+          <h3>Recent Notes</h3>
+          <ul class="notes-list">
+            <li>
+              <strong>AI Development Roadmap</strong><br />
+              <small>2 hours ago</small>
+            </li>
+            <li>
+              <strong>Meeting Notes - Q1 Planning</strong><br />
+              <small>5 hours ago</small>
+            </li>
+            <li>
+              <strong>Research: Neural Networks</strong><br />
+              <small>1 day ago</small>
+            </li>
+            <li>
+              <strong>Personal Goals 2026</strong><br />
+              <small>2 days ago</small>
+            </li>
+          </ul>
+        </article>
 
-            <section id="view-home">
-                <header class="page-header">
-                    <h2>Welcome back</h2>
-                    <p>Here's what's happening with your second brain today</p>
-                    <div class="search-container">
-                        <input type="search" placeholder="Search notes, tasks, or ask AI...">
-                    </div>
-                </header>
+        <article class="widget ai-summary-widget">
+          <h3>AI Summary</h3>
+          <p>
+            You have <strong>4 tasks</strong> due today and <strong>12 notes</strong> modified this week.
+          </p>
+          <p>
+            Top focus area: <strong>AI Development</strong> with 8 related notes.
+          </p>
+          <button type="button">Generate Full Report</button>
+        </article>
+      </div>
 
-                <div class="dashboard-widgets">
-                    <article class="widget">
-                        <h3>Today's Tasks</h3>
-                        <ul class="task-list">
-                            <li><input type="checkbox" id="task1"> <label for="task1">Review project proposal</label></li>
-                            <li><input type="checkbox" id="task2" checked> <label for="task2"><del>Update documentation</del></label></li>
-                            <li><input type="checkbox" id="task3"> <label for="task3">Team standup meeting</label></li>
-                            <li><input type="checkbox" id="task4"> <label for="task4">Code review for PR #234</label></li>
-                        </ul>
-                    </article>
+      <section class="project-board">
+        <h3>Project Board</h3>
+        <div class="kanban-grid">
+          <div class="kanban-column">
+            <h4>To Do <span class="count">3</span></h4>
+            <div class="kanban-card">
+              <p>Design new dashboard layout</p>
+              <span class="tag tag-high">high</span>
+            </div>
+            <div class="kanban-card">
+              <p>Write API documentation</p>
+              <span class="tag tag-medium">medium</span>
+            </div>
+            <div class="kanban-card">
+              <p>Update user guide</p>
+              <span class="tag tag-low">low</span>
+            </div>
+          </div>
 
-                    <article class="widget">
-                        <h3>Recent Notes</h3>
-                        <ul class="notes-list">
-                            <li>
-                                <strong>AI Development Roadmap</strong><br>
-                                <small>2 hours ago</small>
-                            </li>
-                            <li>
-                                <strong>Meeting Notes - Q1 Planning</strong><br>
-                                <small>5 hours ago</small>
-                            </li>
-                            <li>
-                                <strong>Research: Neural Networks</strong><br>
-                                <small>1 day ago</small>
-                            </li>
-                            <li>
-                                <strong>Personal Goals 2026</strong><br>
-                                <small>2 days ago</small>
-                            </li>
-                        </ul>
-                    </article>
+          <div class="kanban-column">
+            <h4>In Progress <span class="count">2</span></h4>
+            <div class="kanban-card">
+              <p>Implement dark mode</p>
+              <span class="tag tag-high">high</span>
+            </div>
+            <div class="kanban-card">
+              <p>Fix authentication bug</p>
+              <span class="tag tag-high">high</span>
+            </div>
+          </div>
 
-                    <article class="widget ai-summary-widget">
-                        <h3>AI Summary</h3>
-                        <p>You have <strong>4 tasks</strong> due today and <strong>12 notes</strong> modified this week.</p>
-                        <p>Top focus area: <strong>AI Development</strong> with 8 related notes.</p>
-                        <button type="button">Generate Full Report</button>
-                    </article>
-                </div>
-
-                <section class="project-board">
-                    <h3>Project Board</h3>
-                    <div class="kanban-grid">
-                        
-                        <div class="kanban-column">
-                            <h4>To Do <span class="count">3</span></h4>
-                            <div class="kanban-card">
-                                <p>Design new dashboard layout</p>
-                                <span class="tag tag-high">high</span>
-                            </div>
-                            <div class="kanban-card">
-                                <p>Write API documentation</p>
-                                <span class="tag tag-medium">medium</span>
-                            </div>
-                            <div class="kanban-card">
-                                <p>Update user guide</p>
-                                <span class="tag tag-low">low</span>
-                            </div>
-                        </div>
-
-                        <div class="kanban-column">
-                            <h4>In Progress <span class="count">2</span></h4>
-                            <div class="kanban-card">
-                                <p>Implement dark mode</p>
-                                <span class="tag tag-high">high</span>
-                            </div>
-                            <div class="kanban-card">
-                                <p>Fix authentication bug</p>
-                                <span class="tag tag-high">high</span>
-                            </div>
-                        </div>
-
-                        <div class="kanban-column">
-                            <h4>Done <span class="count">3</span></h4>
-                            <div class="kanban-card">
-                                <p>Setup project repository</p>
-                                <span class="tag tag-medium">medium</span>
-                            </div>
-                            <div class="kanban-card">
-                                <p>Create wireframes</p>
-                                <span class="tag tag-low">low</span>
-                            </div>
-                            <div class="kanban-card">
-                                <p>Initial component library</p>
-                                <span class="tag tag-medium">medium</span>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-            </section>
-
-            <section id="view-notes" style="display: none;"> <div class="notes-layout">
-                    
-                    <aside class="file-explorer">
-                        <h3>NOTES</h3>
-                        <ul class="file-tree">
-                            <li>
-                                Folder: AI & Machine Learning
-                                <ul>
-                                    <li class="active-file">Neural Networks</li>
-                                    <li>Transformers Architecture</li>
-                                    <li>Reinforcement Learning</li>
-                                </ul>
-                            </li>
-                            <li>Folder: Projects</li>
-                            <li>Folder: Personal</li>
-                        </ul>
-                    </aside>
-
-                    <article class="note-editor-main">
-                        <header>
-                            <h2>Neural Networks</h2>
-                            <p><small>Last edited: 2 hours ago</small></p>
-                        </header>
-                        <div class="editor-content">
-                            <h3>Introduction</h3>
-                            <p>Neural networks are the foundation of modern <strong>deep learning</strong> systems. They consist of layers of interconnected nodes that process information in a way inspired by biological neurons.</p>
-                            
-                            <h3>Architecture</h3>
-                            <p>A typical neural network consists of:</p>
-                            <ul>
-                                <li><strong>Input Layer</strong> - receives the raw data</li>
-                                <li><strong>Hidden Layers</strong> - process and transform the data</li>
-                                <li><strong>Output Layer</strong> - produces the final prediction</li>
-                            </ul>
-
-                            <h3>Related Concepts</h3>
-                            <p>For more information, see <a>[[Deep Learning Fundamentals]]</a></p>
-                        </div>
-                    </article>
-
-                    <aside class="linked-mentions">
-                        <h3>LINKED MENTIONS</h3>
-                        <p><small>3 notes link to this page</small></p>
-                        
-                        <div class="mention-card">
-                            <h4>Deep Learning Fundamentals</h4>
-                            <p>mentions neural networks architecture</p>
-                        </div>
-                        <div class="mention-card">
-                            <h4>AI Development Roadmap</h4>
-                            <p>links to neural network research</p>
-                        </div>
-                        <div class="mention-card">
-                            <h4>PyTorch Tutorial</h4>
-                            <p>references neural network implementation</p>
-                        </div>
-                    </aside>
-
-                    <button class="fab-ask-ai" title="Ask AI">Chat</button>
-                </div>
-            </section>
-
-            <section id="view-ai-chat" style="display: none;">
-                <div class="chat-layout-split">
-                    
-                    <aside class="chat-context-panel">
-                        <h3>Context</h3>
-                        <p>Documents being analyzed</p>
-                        <ul class="context-documents">
-                            <li class="doc-chip">Neural Networks.md <small>note</small></li>
-                            <li class="doc-chip">AI Development Roadmap.md <small>note</small></li>
-                            <li class="doc-chip">Research Paper - Transformers.pdf <small>pdf</small></li>
-                        </ul>
-                        <button type="button">+ Add Documents</button>
-
-                        <div class="ai-model-info">
-                            <h4>AI Model</h4>
-                            <p>GPT-4 Turbo</p>
-                            <p>Context window: 128k tokens</p>
-                            <p>Temperature: 0.7</p>
-                        </div>
-                    </aside>
-
-                    <section class="chat-interface-panel">
-                        <header>
-                            <h2>AI Chat</h2>
-                            <p>Ask questions about your knowledge base</p>
-                        </header>
-
-                        <div class="chat-history">
-                            <div class="message ai-message">
-                                <p>Hello! I'm your AI assistant. I've analyzed the 3 documents you've selected. What would you like to know?</p>
-                            </div>
-                            <div class="message user-message">
-                                <p>Can you explain the key concepts in my neural networks notes?</p>
-                            </div>
-                            <div class="message ai-message">
-                                <p>Based on your notes, neural networks are computational models inspired by biological neurons... <a>[1]</a></p>
-                            </div>
-                        </div>
-
-                        <form class="chat-input-form">
-                            <textarea placeholder="Ask your Second Brain..."></textarea>
-                            <div class="form-actions">
-                                <span><small>Press Enter to send, Shift+Enter for new line</small></span>
-                                <button type="submit">Send</button>
-                            </div>
-                        </form>
-                    </section>
-
-                </div>
-            </section>
-
-            <section id="view-settings" style="display: none;">
-                <header class="page-header">
-                    <h2>Settings</h2>
-                    <p>Customize your Second Brain experience</p>
-                </header>
-                
-                <form class="settings-form">
-                    <fieldset>
-                        <legend>Profile</legend>
-                        <label for="displayName">Display Name</label>
-                        <input type="text" id="displayName" value="Alex Chen">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" value="alex.chen@example.com">
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>Appearance</legend>
-                        <label for="theme">Theme</label>
-                        <select id="theme">
-                            <option value="cyberpunk" selected>Cyberpunk Dark (Current)</option>
-                            <option value="light">Light Mode</option>
-                        </select>
-                    </fieldset>
-                    
-                    </form>
-            </section>
-
-        </main>
-    </div>
-
-</body>
-</html>
+          <div class="kanban-column">
+            <h4>Done <span class="count">3</span></h4>
+            <div class="kanban-card">
+              <p>Setup project repository</p>
+              <span class="tag tag-medium">medium</span>
+            </div>
+            <div class="kanban-card">
+              <p>Create wireframes</p>
+              <span class="tag tag-low">low</span>
+            </div>
+            <div class="kanban-card">
+              <p>Initial component library</p>
+              <span class="tag tag-medium">medium</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+{% endblock %}

@@ -1,35 +1,22 @@
-/* ==========================================================================
-   1. CSS VARIABLES (Design System)
-   ========================================================================== */
+/* ROOT VARIABLES */
 :root {
-    /* Backgrounds */
     --bg-base: #0D0D12;
     --bg-sidebar: rgba(13, 13, 18, 0.85);
     --bg-glass: rgba(20, 20, 30, 0.4);
-    
-    /* Typography */
     --text-primary: #FFFFFF;
     --text-secondary: #A0A0B0;
     --font-main: 'Inter', 'Roboto Mono', sans-serif;
-    
-    /* Neon Accents */
     --neon-cyan: #00F0FF;
     --neon-purple: #B026FF;
     --neon-green: #00FF41;
-    --neon-red: #FF2A5F; /* Added for high priority tasks */
-    
-    /* Borders & Shadows */
+    --neon-red: #FF2A5F;
     --border-glass: 1px solid rgba(255, 255, 255, 0.08);
     --glow-cyan: 0 0 10px rgba(0, 240, 255, 0.3), inset 0 0 5px rgba(0, 240, 255, 0.1);
     --glow-purple: 0 0 10px rgba(176, 38, 255, 0.3);
-    
-    /* Layout */
     --sidebar-width: 260px;
 }
 
-/* ==========================================================================
-   2. RESET & BASE STYLES
-   ========================================================================== */
+/* RESET */
 * {
     margin: 0;
     padding: 0;
@@ -42,7 +29,7 @@ body {
     font-family: var(--font-main);
     line-height: 1.6;
     height: 100vh;
-    overflow: hidden; /* Prevents whole-page scrolling, we'll scroll specific areas */
+    overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,16 +44,13 @@ a {
     transition: all 0.2s ease;
 }
 
-/* ==========================================================================
-   3. GLOBAL APP LAYOUT
-   ========================================================================== */
+/* LAYOUT */
 #app-container, #app-wrapper {
     display: flex;
     height: 100vh;
     width: 100vw;
 }
 
-/* Main Workspace Area */
 main {
     flex: 1;
     padding: 2rem 3rem;
@@ -75,10 +59,8 @@ main {
                 radial-gradient(circle at bottom left, rgba(176, 38, 255, 0.03), transparent 40%);
 }
 
-/* ==========================================================================
-   4. SIDEBAR NAVIGATION
-   ========================================================================== */
-.main-sidebar, #sidebar {
+/* SIDEBAR */
+.main-sidebar {
     width: var(--sidebar-width);
     background-color: var(--bg-sidebar);
     border-right: var(--border-glass);
@@ -114,10 +96,11 @@ main {
     color: var(--text-secondary);
     border-radius: 8px;
     border: 1px solid transparent;
+    transition: all 0.2s ease;
 }
 
-/* Neon Hover & Active States */
-.main-nav a:hover, .main-nav li.active a {
+.main-nav a:hover,
+.main-nav li.active a {
     color: var(--neon-cyan);
     background: rgba(0, 240, 255, 0.05);
     border: 1px solid rgba(0, 240, 255, 0.2);
@@ -125,10 +108,28 @@ main {
     text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
 }
 
-/* ==========================================================================
-   5. GLASSMORPHISM CARDS & WIDGETS
-   ========================================================================== */
-.widget, .task-card, .settings-card, .mention-card, .kanban-card {
+/* STORAGE INDICATOR */
+.storage-indicator {
+    margin-top: auto;
+    padding-top: 2rem;
+    border-top: var(--border-glass);
+}
+
+.storage-indicator p {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.storage-indicator progress {
+    margin: 0.8rem 0;
+}
+
+/* CARDS & WIDGETS */
+.widget,
+.task-card,
+.settings-card,
+.mention-card,
+.kanban-card {
     background: var(--bg-glass);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -139,21 +140,28 @@ main {
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.widget:hover, .task-card:hover {
+.widget:hover,
+.task-card:hover {
     border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 }
 
-/* Specific AI Glowing Card */
 .ai-summary-widget {
     border-color: rgba(176, 38, 255, 0.3);
     box-shadow: var(--glow-purple);
 }
 
-/* ==========================================================================
-   6. FORMS, INPUTS & BUTTONS
-   ========================================================================== */
-input[type="text"], input[type="search"], input[type="email"], textarea, select {
+.task-card.completed {
+    opacity: 0.6;
+}
+
+/* FORMS & INPUTS */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="range"],
+textarea,
+select {
     width: 100%;
     background: rgba(0, 0, 0, 0.4);
     border: var(--border-glass);
@@ -165,11 +173,20 @@ input[type="text"], input[type="search"], input[type="email"], textarea, select 
     transition: all 0.3s ease;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus,
+select:focus {
     border-color: var(--neon-cyan);
     box-shadow: var(--glow-cyan);
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+    cursor: pointer;
+    accent-color: var(--neon-cyan);
+}
+
+/* BUTTONS */
 button {
     background: transparent;
     color: var(--neon-purple);
@@ -189,10 +206,46 @@ button:hover {
     box-shadow: var(--glow-purple);
 }
 
-/* ==========================================================================
-   7. BADGES & TAGS (For Tasks/Kanban)
-   ========================================================================== */
-.badge, .tag {
+.btn-primary {
+    color: var(--neon-cyan);
+    border-color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+    box-shadow: inset 0 0 5px rgba(0, 240, 255, 0.2);
+}
+
+.btn-primary:hover {
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: var(--glow-cyan);
+}
+
+.btn-outline-cyan {
+    color: var(--neon-cyan);
+    border-color: var(--neon-cyan);
+}
+
+.btn-outline-cyan:hover {
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: var(--glow-cyan);
+}
+
+.btn-outline-danger {
+    color: var(--neon-red);
+    border-color: var(--neon-red);
+}
+
+.btn-outline-danger:hover {
+    background: rgba(255, 42, 95, 0.1);
+    box-shadow: 0 0 10px rgba(255, 42, 95, 0.3);
+}
+
+.btn-send {
+    padding: 0.5rem 1rem;
+    min-width: auto;
+}
+
+/* BADGES & TAGS */
+.badge,
+.tag {
     display: inline-block;
     padding: 0.2rem 0.6rem;
     border-radius: 4px;
@@ -203,34 +256,34 @@ button:hover {
     margin-right: 0.5rem;
 }
 
-.priority-high, .tag-high { 
-    color: var(--neon-red); 
-    background: rgba(255, 42, 95, 0.1); 
-    border: 1px solid rgba(255, 42, 95, 0.3); 
-}
-.priority-medium, .tag-medium { 
-    color: var(--neon-cyan); 
-    background: rgba(0, 240, 255, 0.1); 
-    border: 1px solid rgba(0, 240, 255, 0.3); 
-}
-.priority-low, .tag-low { 
-    color: var(--neon-green); 
-    background: rgba(0, 255, 65, 0.1); 
-    border: 1px solid rgba(0, 255, 65, 0.3); 
-}
-.category-purple { 
-    color: var(--neon-purple); 
-    background: rgba(176, 38, 255, 0.1); 
-    border: 1px solid rgba(176, 38, 255, 0.3); 
+.priority-high,
+.tag-high {
+    color: var(--neon-red);
+    background: rgba(255, 42, 95, 0.1);
+    border: 1px solid rgba(255, 42, 95, 0.3);
 }
 
-/* ==========================================================================
-   8. UTILITIES & SPECIFICS
-   ========================================================================== */
-.text-cyan { color: var(--neon-cyan); }
-.text-purple { color: var(--neon-purple); }
+.priority-medium,
+.tag-medium {
+    color: var(--neon-cyan);
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
 
-/* Progress Bar Reset */
+.priority-low,
+.tag-low {
+    color: var(--neon-green);
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.category-purple {
+    color: var(--neon-purple);
+    background: rgba(176, 38, 255, 0.1);
+    border: 1px solid rgba(176, 38, 255, 0.3);
+}
+
+/* PROGRESS BAR */
 progress {
     -webkit-appearance: none;
     appearance: none;
@@ -239,26 +292,36 @@ progress {
     border-radius: 3px;
     background: rgba(255, 255, 255, 0.1);
 }
+
 progress::-webkit-progress-value {
     background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
     border-radius: 3px;
     box-shadow: 0 0 8px var(--neon-cyan);
 }
 
-/* ==========================================================================
-   9. LAYOUTS & GRIDS (Расположение элементов как в Figma)
-   ========================================================================== */
-
-/* Дашборд: 3 виджета в ряд */
-.dashboard-widgets {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 одинаковые колонки */
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-    margin-top: 1.5rem;
+progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+    border-radius: 3px;
+    box-shadow: 0 0 8px var(--neon-cyan);
 }
 
-/* Канбан доска: 3 колонки (To Do, In Progress, Done) */
+/* UTILITIES */
+.text-cyan {
+    color: var(--neon-cyan);
+}
+
+.text-purple {
+    color: var(--neon-purple);
+}
+
+/* GRIDS & LAYOUTS */
+.dashboard-widgets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin: 1.5rem 0 2.5rem 0;
+}
+
 .kanban-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -279,17 +342,22 @@ progress::-webkit-progress-value {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 0.5rem;
     margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
-/* Страница Заметок: 3 колонки (Дерево, Редактор, Связи) */
+.kanban-column h4 .count {
+    color: var(--neon-cyan);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
 .notes-layout {
     display: grid;
-    grid-template-columns: 250px 1fr 250px; /* Боковые панели по 250px, центр занимает остаток */
+    grid-template-columns: 250px 1fr 250px;
     gap: 2rem;
     height: 100%;
 }
 
-/* Страница Чат-ИИ: Контекст слева, Чат справа */
 .chat-layout-split {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -297,19 +365,7 @@ progress::-webkit-progress-value {
     height: 100%;
 }
 
-/* Убираем маркеры списков для чистоты */
-ul.task-list, ul.notes-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-ul.task-list li, ul.notes-list li {
-    margin-bottom: 0.8rem;
-}
-
-/* ==========================================================================
-   10. PAGE HEADER & SEARCH
-   ========================================================================== */
+/* PAGE HEADER */
 .page-header {
     margin-bottom: 2rem;
 }
@@ -324,18 +380,29 @@ ul.task-list li, ul.notes-list li {
     margin-bottom: 1.5rem;
 }
 
+.workspace-header {
+    margin-bottom: 2rem;
+}
+
+.workspace-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* SEARCH & ACTIONS */
 .search-container {
     margin-top: 1rem;
 }
 
 .search-container input {
-    width: 100%;
     max-width: 500px;
 }
 
-/* ==========================================================================
-   11. PROJECT BOARD
-   ========================================================================== */
+.actions-bar {
+    margin-bottom: 1.5rem;
+}
+
+/* PROJECT BOARD */
 .project-board {
     margin-top: 3rem;
 }
@@ -346,9 +413,7 @@ ul.task-list li, ul.notes-list li {
     color: var(--text-primary);
 }
 
-/* ==========================================================================
-   12. KANBAN CARDS & STYLING
-   ========================================================================== */
+/* KANBAN CARDS */
 .kanban-card p {
     margin: 0 0 0.8rem 0;
     color: var(--text-primary);
@@ -358,19 +423,24 @@ ul.task-list li, ul.notes-list li {
     margin-bottom: 0;
 }
 
-.kanban-column h4 .count {
-    color: var(--neon-cyan);
-    font-weight: 700;
-    font-size: 0.9rem;
-}
-
-/* ==========================================================================
-   13. WIDGET CONTENT STYLING
-   ========================================================================== */
+/* WIDGETS CONTENT */
 .widget h3 {
     font-size: 1.1rem;
     margin-bottom: 1rem;
     color: var(--text-primary);
+}
+
+.task-list,
+.notes-list,
+.context-document-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.task-list li,
+.notes-list li,
+.context-document-list li {
+    margin-bottom: 0.8rem;
 }
 
 .widget input[type="checkbox"] {
@@ -381,6 +451,7 @@ ul.task-list li, ul.notes-list li {
 .widget label {
     cursor: pointer;
     color: var(--text-secondary);
+    transition: color 0.2s ease;
 }
 
 .widget label:hover {
@@ -390,6 +461,7 @@ ul.task-list li, ul.notes-list li {
 .task-list li input[type="checkbox"]:checked + label {
     color: var(--text-secondary);
     text-decoration: line-through;
+    opacity: 0.7;
 }
 
 .notes-list strong {
@@ -403,36 +475,452 @@ ul.task-list li, ul.notes-list li {
     font-size: 0.8rem;
 }
 
-/* ==========================================================================
-   14. BUTTON STYLING VARIANTS
-   ========================================================================== */
-.btn-primary {
-    color: var(--neon-cyan);
-    border: 1px solid var(--neon-cyan);
-    background: transparent;
+/* TASK CARDS */
+.task-card {
+    display: flex;
+    gap: 1rem;
 }
 
-.btn-primary:hover {
+.task-checkbox-wrapper {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 0.2rem;
+}
+
+.task-details {
+    flex: 1;
+}
+
+.task-title {
+    display: block;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.task-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.meta-item {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* TASK GROUPS */
+.task-group {
+    margin-bottom: 2rem;
+}
+
+.task-group h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.completed-group {
+    opacity: 0.8;
+}
+
+/* SETTINGS */
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.setting-row:last-child {
+    border-bottom: none;
+}
+
+.setting-info label {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.3rem;
+    cursor: pointer;
+}
+
+.setting-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.color-picker-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.color-swatch {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.color-picker-group input[type="radio"] {
+    width: auto;
+    margin-right: 0.3rem;
+}
+
+/* STORAGE DISPLAY */
+.storage-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.storage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+/* NOTES PAGE */
+.file-explorer-column,
+.editor-column,
+.linked-mentions-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-explorer-column header h2,
+.linked-mentions-column header h3 {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.directory-tree,
+.mentions-list {
+    list-style: none;
+}
+
+.folder-name {
+    color: var(--neon-cyan);
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem 0;
+}
+
+.active-file {
+    color: var(--neon-cyan);
+    font-weight: 600;
+}
+
+.mention-card {
+    background: var(--bg-glass);
+    border: var(--border-glass);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mention-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.mention-card h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+}
+
+.mention-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.markdown-content {
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.markdown-content h2 {
+    font-size: 1.3rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.markdown-content h3 {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.markdown-content li {
+    margin-bottom: 0.5rem;
+}
+
+.note-header {
+    margin-bottom: 2rem;
+}
+
+.note-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.meta-data {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* AI CHAT */
+.chat-interface {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.chat-header h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.chat-feed {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.message {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-avatar {
+    font-size: 1.5rem;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message-bubble {
+    background: var(--bg-glass);
+    border: var(--border-glass);
+    border-radius: 12px;
+    padding: 1rem;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.message-bubble p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.ai-message .message-bubble {
+    border-color: rgba(0, 240, 255, 0.2);
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.user-message .message-bubble {
+    background: rgba(176, 38, 255, 0.1);
+    border-color: rgba(176, 38, 255, 0.3);
+}
+
+.chat-input-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.keyboard-hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+kbd {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.chat-context-panel header h2 {
+    font-size: 1.1rem;
+}
+
+.document-card {
+    background: var(--bg-glass);
+    border: var(--border-glass);
+    border-radius: 8px;
+    padding: 0.8rem;
+    display: flex;
+    gap: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.document-card:hover {
+    border-color: rgba(0, 240, 255, 0.3);
+    background: rgba(0, 240, 255, 0.05);
+}
+
+.doc-icon {
+    font-size: 1.3rem;
+}
+
+.doc-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.doc-title {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.doc-type {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.ai-model-info {
+    background: var(--bg-glass);
+    border: var(--border-glass);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.ai-model-info h3 {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.model-name {
+    color: var(--neon-cyan);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+}
+
+.model-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.model-stats dt {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.model-stats dd {
+    color: var(--neon-cyan);
+    margin-left: 0;
+    margin-bottom: 0.5rem;
+}
+
+/* FLOATING ACTION BUTTON */
+.fab-chat-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--bg-glass);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 100;
+    font-size: 1.5rem;
+}
+
+.fab-chat-button:hover {
     background: rgba(0, 240, 255, 0.1);
     box-shadow: var(--glow-cyan);
+    border-color: rgba(0, 240, 255, 0.6);
 }
 
-.btn-outline-cyan {
-    color: var(--neon-cyan);
-    border: 1px solid var(--neon-cyan);
-}
-
-.btn-outline-cyan:hover {
-    background: rgba(0, 240, 255, 0.1);
-    box-shadow: var(--glow-cyan);
-}
-
-.btn-outline-danger {
-    color: var(--neon-red);
-    border: 1px solid var(--neon-red);
-}
-
-.btn-outline-danger:hover {
-    background: rgba(255, 42, 95, 0.1);
-    box-shadow: 0 0 10px rgba(255, 42, 95, 0.3);
+/* SUBTITLE */
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
 }

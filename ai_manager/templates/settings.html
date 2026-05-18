@@ -1,166 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Second Brain - Settings</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}
+  Second Brain - Settings
+{% endblock %}
+{% block content %}
+  {% set active_page = 'settings' %}
+  <main class="settings-workspace">
+    <header class="workspace-header">
+      <h1>Settings</h1>
+      <p>Customize your Second Brain experience</p>
+    </header>
 
-    <div id="app-wrapper">
+    <div class="settings-container">
+      <section class="settings-card">
+        <h2><span aria-hidden="true">👤</span> Profile</h2>
 
-        {% include "sidebar.html" with active="settings" %}
+        <div class="form-group">
+          <label for="display-name">Display Name</label>
+          <input type="text" id="display-name" name="display-name" value="Alex Chen" />
+        </div>
 
-        <main class="settings-workspace">
+        <div class="form-group">
+          <label for="email-address">Email</label>
+          <input type="email" id="email-address" name="email-address" value="alex.chen@example.com" />
+        </div>
+      </section>
 
-            <header class="workspace-header">
-                <h1>Settings</h1>
-                <p>Customize your Second Brain experience</p>
-            </header>
+      <section class="settings-card">
+        <h2><span aria-hidden="true">🔔</span> Notifications</h2>
 
-            <div class="settings-container">
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="notify-tasks">Task Reminders</label>
+            <p class="setting-description">Get notified about upcoming tasks</p>
+          </div>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="notify-tasks" class="toggle-input" checked />
+          </div>
+        </div>
 
-                <section class="settings-card">
-                    <h2><span aria-hidden="true">👤</span> Profile</h2>
-                    
-                    <div class="form-group">
-                        <label for="display-name">Display Name</label>
-                        <input type="text" id="display-name" name="display-name" value="Alex Chen">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email-address">Email</label>
-                        <input type="email" id="email-address" name="email-address" value="alex.chen@example.com">
-                    </div>
-                </section>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="notify-ai">AI Insights</label>
+            <p class="setting-description">Receive AI-generated insights about your notes</p>
+          </div>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="notify-ai" class="toggle-input" checked />
+          </div>
+        </div>
 
-                <section class="settings-card">
-                    <h2><span aria-hidden="true">🔔</span> Notifications</h2>
-                    
-                    <div class="setting-row">
-                        <div class="setting-info">
-                            <label for="notify-tasks">Task Reminders</label>
-                            <p class="setting-description">Get notified about upcoming tasks</p>
-                        </div>
-                        <div class="toggle-wrapper">
-                            <input type="checkbox" id="notify-tasks" class="toggle-input" checked>
-                        </div>
-                    </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="notify-weekly">Weekly Summary</label>
+            <p class="setting-description">Get a weekly summary of your productivity</p>
+          </div>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="notify-weekly" class="toggle-input" />
+          </div>
+        </div>
+      </section>
 
-                    <div class="setting-row">
-                        <div class="setting-info">
-                            <label for="notify-ai">AI Insights</label>
-                            <p class="setting-description">Receive AI-generated insights about your notes</p>
-                        </div>
-                        <div class="toggle-wrapper">
-                            <input type="checkbox" id="notify-ai" class="toggle-input" checked>
-                        </div>
-                    </div>
+      <section class="settings-card">
+        <h2><span aria-hidden="true">🎨</span> Appearance</h2>
 
-                    <div class="setting-row">
-                        <div class="setting-info">
-                            <label for="notify-weekly">Weekly Summary</label>
-                            <p class="setting-description">Get a weekly summary of your productivity</p>
-                        </div>
-                        <div class="toggle-wrapper">
-                            <input type="checkbox" id="notify-weekly" class="toggle-input">
-                        </div>
-                    </div>
-                </section>
+        <div class="form-group">
+          <label for="theme-select">Theme</label>
+          <select id="theme-select" name="theme-select">
+            <option value="cyberpunk" selected>Cyberpunk Dark (Current)</option>
+            <option value="matrix">Matrix Green</option>
+            <option value="light">High-Contrast Light</option>
+          </select>
+        </div>
 
-                <section class="settings-card">
-                    <h2><span aria-hidden="true">🎨</span> Appearance</h2>
-                    
-                    <div class="form-group">
-                        <label for="theme-select">Theme</label>
-                        <select id="theme-select" name="theme-select">
-                            <option value="cyberpunk" selected>Cyberpunk Dark (Current)</option>
-                            <option value="matrix">Matrix Green</option>
-                            <option value="light">High-Contrast Light</option>
-                        </select>
-                    </div>
+        <div class="form-group">
+          <label>Accent Color</label>
+          <div class="color-picker-group">
+            <input type="radio" id="color-cyan" name="accent-color" value="cyan" checked />
+            <label for="color-cyan" class="color-swatch swatch-cyan">Cyan</label>
 
-                    <div class="form-group">
-                        <label>Accent Color</label>
-                        <div class="color-picker-group">
-                            <input type="radio" id="color-cyan" name="accent-color" value="cyan" checked>
-                            <label for="color-cyan" class="color-swatch swatch-cyan">Cyan</label>
+            <input type="radio" id="color-purple" name="accent-color" value="purple" />
+            <label for="color-purple" class="color-swatch swatch-purple">Purple</label>
 
-                            <input type="radio" id="color-purple" name="accent-color" value="purple">
-                            <label for="color-purple" class="color-swatch swatch-purple">Purple</label>
+            <input type="radio" id="color-green" name="accent-color" value="green" />
+            <label for="color-green" class="color-swatch swatch-green">Green</label>
+          </div>
+        </div>
+      </section>
 
-                            <input type="radio" id="color-green" name="accent-color" value="green">
-                            <label for="color-green" class="color-swatch swatch-green">Green</label>
-                        </div>
-                    </div>
-                </section>
+      <section class="settings-card">
+        <h2><span aria-hidden="true">✨</span> AI Assistant</h2>
 
-                <section class="settings-card">
-                    <h2><span aria-hidden="true">✨</span> AI Assistant</h2>
-                    
-                    <div class="form-group">
-                        <label for="ai-model">AI Model</label>
-                        <select id="ai-model" name="ai-model">
-                            <option value="gpt4-turbo" selected>GPT-4 Turbo</option>
-                            <option value="claude-3">Claude 3 Opus</option>
-                        </select>
-                    </div>
+        <div class="form-group">
+          <label for="ai-model">AI Model</label>
+          <select id="ai-model" name="ai-model">
+            <option value="gpt4-turbo" selected>GPT-4 Turbo</option>
+            <option value="claude-3">Claude 3 Opus</option>
+          </select>
+        </div>
 
-                    <div class="form-group range-group">
-                        <label for="ai-temperature">Temperature: <span id="temp-value">0.7</span></label>
-                        <input type="range" id="ai-temperature" name="ai-temperature" min="0" max="1" step="0.1" value="0.7">
-                    </div>
-                </section>
+        <div class="form-group range-group">
+          <label for="ai-temperature">Temperature: <span id="temp-value">0.7</span></label>
+          <input type="range" id="ai-temperature" name="ai-temperature" min="0" max="1" step="0.1" value="0.7" />
+        </div>
+      </section>
 
-                <section class="settings-card">
-                    <h2><span aria-hidden="true">🗄️</span> Storage & Data</h2>
-                    
-                    <div class="storage-details">
-                        <div class="storage-header">
-                            <span>Storage Used</span>
-                            <span class="text-cyan">7.5 GB / 10 GB</span>
-                        </div>
-                        <progress class="main-progress-bar" value="7.5" max="10"></progress>
-                    </div>
+      <section class="settings-card">
+        <h2><span aria-hidden="true">🗄️</span> Storage & Data</h2>
 
-                    <button type="button" class="btn-outline-cyan">Manage Storage</button>
-                </section>
+        <div class="storage-details">
+          <div class="storage-header">
+            <span>Storage Used</span>
+            <span class="text-cyan">7.5 GB / 10 GB</span>
+          </div>
+          <progress class="main-progress-bar" value="7.5" max="10"></progress>
+        </div>
 
-                <section class="settings-card">
-                    <h2><span aria-hidden="true">🛡️</span> Privacy & Security</h2>
-                    
-                    <div class="setting-row">
-                        <div class="setting-info">
-                            <label for="e2e-encryption">End-to-End Encryption</label>
-                            <p class="setting-description">Encrypt your notes locally before syncing</p>
-                        </div>
-                        <div class="toggle-wrapper">
-                            <input type="checkbox" id="e2e-encryption" class="toggle-input" checked>
-                        </div>
-                    </div>
+        <button type="button" class="btn-outline-cyan">Manage Storage</button>
+      </section>
 
-                    <div class="setting-row">
-                        <div class="setting-info">
-                            <label for="two-factor">Two-Factor Authentication</label>
-                            <p class="setting-description">Add an extra layer of security</p>
-                        </div>
-                        <div class="toggle-wrapper">
-                            <input type="checkbox" id="two-factor" class="toggle-input">
-                        </div>
-                    </div>
+      <section class="settings-card">
+        <h2><span aria-hidden="true">🛡️</span> Privacy & Security</h2>
 
-                    <div class="action-row">
-                        <button type="button" class="btn-outline-danger">Change Password</button>
-                    </div>
-                </section>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="e2e-encryption">End-to-End Encryption</label>
+            <p class="setting-description">Encrypt your notes locally before syncing</p>
+          </div>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="e2e-encryption" class="toggle-input" checked />
+          </div>
+        </div>
 
-            </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="two-factor">Two-Factor Authentication</label>
+            <p class="setting-description">Add an extra layer of security</p>
+          </div>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="two-factor" class="toggle-input" />
+          </div>
+        </div>
 
-        </main>
-
+        <div class="action-row">
+          <button type="button" class="btn-outline-danger">Change Password</button>
+        </div>
+      </section>
     </div>
-
-</body>
-</html>
+  </main>
+{% endblock %}

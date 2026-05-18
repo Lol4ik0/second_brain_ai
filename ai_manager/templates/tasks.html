@@ -1,126 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Second Brain - Tasks</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}
+  Second Brain - Tasks
+{% endblock %}
+{% block content %}
+  {% set active_page = 'tasks' %}
 
-    <div id="app-wrapper">
+  <main class="tasks-workspace">
+    <header class="workspace-header">
+      <h1>Tasks</h1>
+      <p>Manage your tasks and stay productive</p>
+    </header>
 
-        {% include "sidebar.html" with active="tasks" %}
-
-        <main class="tasks-workspace">
-
-            <header class="workspace-header">
-                <h1>Tasks</h1>
-                <p>Manage your tasks and stay productive</p>
-            </header>
-
-            <div class="actions-bar">
-                <button class="btn-primary" type="button">
-                    <span aria-hidden="true">+</span> Add New Task
-                </button>
-            </div>
-
-            <section class="task-group">
-                <h2>Active Tasks (3)</h2>
-                
-                <div class="task-list">
-                    
-                    <article class="task-card">
-                        <div class="task-checkbox-wrapper">
-                            <input type="checkbox" id="task-prop" name="task-prop">
-                        </div>
-                        <div class="task-details">
-                            <label for="task-prop" class="task-title">Review project proposal</label>
-                            <div class="task-metadata">
-                                <span class="badge priority-high">high</span>
-                                <span class="meta-item date">📅 2026-02-24</span>
-                                <span class="meta-item tag-icon">🏷️</span>
-                                <span class="badge category-purple">work</span>
-                                <span class="badge category-purple">urgent</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="task-card">
-                        <div class="task-checkbox-wrapper">
-                            <input type="checkbox" id="task-meet" name="task-meet">
-                        </div>
-                        <div class="task-details">
-                            <label for="task-meet" class="task-title">Team standup meeting</label>
-                            <div class="task-metadata">
-                                <span class="badge priority-high">high</span>
-                                <span class="meta-item date">📅 2026-02-24</span>
-                                <span class="meta-item tag-icon">🏷️</span>
-                                <span class="badge category-purple">meetings</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="task-card">
-                        <div class="task-checkbox-wrapper">
-                            <input type="checkbox" id="task-research" name="task-research">
-                        </div>
-                        <div class="task-details">
-                            <label for="task-research" class="task-title">Research neural networks</label>
-                            <div class="task-metadata">
-                                <span class="badge priority-low">low</span>
-                                <span class="meta-item date">📅 2026-02-28</span>
-                                <span class="meta-item tag-icon">🏷️</span>
-                                <span class="badge category-purple">learning</span>
-                                <span class="badge category-purple">AI</span>
-                            </div>
-                        </div>
-                    </article>
-
-                </div>
-            </section>
-
-            <section class="task-group completed-group">
-                <h2>Completed (2)</h2>
-                
-                <div class="task-list">
-                    
-                    <article class="task-card completed">
-                        <div class="task-checkbox-wrapper">
-                            <input type="checkbox" id="task-doc" name="task-doc" checked>
-                        </div>
-                        <div class="task-details">
-                            <label for="task-doc" class="task-title">Update documentation</label>
-                            <div class="task-metadata">
-                                <span class="badge priority-medium">medium</span>
-                                <span class="meta-item date">📅 2026-02-23</span>
-                                <span class="meta-item tag-icon">🏷️</span>
-                                <span class="badge category-purple">work</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="task-card completed">
-                        <div class="task-checkbox-wrapper">
-                            <input type="checkbox" id="task-pr" name="task-pr" checked>
-                        </div>
-                        <div class="task-details">
-                            <label for="task-pr" class="task-title">Code review for PR #234</label>
-                            <div class="task-metadata">
-                                <span class="badge priority-medium">medium</span>
-                                <span class="meta-item date">📅 2026-02-25</span>
-                                <span class="meta-item tag-icon">🏷️</span>
-                                <span class="badge category-purple">development</span>
-                            </div>
-                        </div>
-                    </article>
-
-                </div>
-            </section>
-
-        </main>
+    <div class="actions-bar">
+      <button class="btn-primary" type="button"><span aria-hidden="true">+</span> Add New Task</button>
     </div>
 
-</body>
-</html>
+    <section class="task-group">
+      <h2>Active Tasks (3)</h2>
+
+      <div class="task-list">
+        <article class="task-card">
+          <div class="task-checkbox-wrapper">
+            <input type="checkbox" id="task-prop" name="task-prop" />
+          </div>
+          <div class="task-details">
+            <label for="task-prop" class="task-title">Review project proposal</label>
+            <div class="task-metadata">
+              <span class="badge priority-high">high</span>
+              <span class="meta-item date">📅 2026-02-24</span>
+              <span class="meta-item tag-icon">🏷️</span>
+              <span class="badge category-purple">work</span>
+              <span class="badge category-purple">urgent</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-card">
+          <div class="task-checkbox-wrapper">
+            <input type="checkbox" id="task-meet" name="task-meet" />
+          </div>
+          <div class="task-details">
+            <label for="task-meet" class="task-title">Team standup meeting</label>
+            <div class="task-metadata">
+              <span class="badge priority-high">high</span>
+              <span class="meta-item date">📅 2026-02-24</span>
+              <span class="meta-item tag-icon">🏷️</span>
+              <span class="badge category-purple">meetings</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-card">
+          <div class="task-checkbox-wrapper">
+            <input type="checkbox" id="task-research" name="task-research" />
+          </div>
+          <div class="task-details">
+            <label for="task-research" class="task-title">Research neural networks</label>
+            <div class="task-metadata">
+              <span class="badge priority-low">low</span>
+              <span class="meta-item date">📅 2026-02-28</span>
+              <span class="meta-item tag-icon">🏷️</span>
+              <span class="badge category-purple">learning</span>
+              <span class="badge category-purple">AI</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="task-group completed-group">
+      <h2>Completed (2)</h2>
+
+      <div class="task-list">
+        <article class="task-card completed">
+          <div class="task-checkbox-wrapper">
+            <input type="checkbox" id="task-doc" name="task-doc" checked />
+          </div>
+          <div class="task-details">
+            <label for="task-doc" class="task-title">Update documentation</label>
+            <div class="task-metadata">
+              <span class="badge priority-medium">medium</span>
+              <span class="meta-item date">📅 2026-02-23</span>
+              <span class="meta-item tag-icon">🏷️</span>
+              <span class="badge category-purple">work</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-card completed">
+          <div class="task-checkbox-wrapper">
+            <input type="checkbox" id="task-pr" name="task-pr" checked />
+          </div>
+          <div class="task-details">
+            <label for="task-pr" class="task-title">Code review for PR #234</label>
+            <div class="task-metadata">
+              <span class="badge priority-medium">medium</span>
+              <span class="meta-item date">📅 2026-02-25</span>
+              <span class="meta-item tag-icon">🏷️</span>
+              <span class="badge category-purple">development</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+{% endblock %}
