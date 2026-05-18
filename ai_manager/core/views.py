@@ -7,23 +7,22 @@ from . import rag_engine
 
 def home_view(request):
     """Отдает главную страницу (home.html)"""
-    return render(request, 'home.html')
+    return render(request, 'home.html', {'active_page': 'home'})
 
 def ai_chat_view(request):
     """Отдает страницу чата (ai-chat.html)"""
-    return render(request, 'ai-chat.html')
-
+    return render(request, 'ai-chat.html', {'active_page': 'ai-chat'})
 def notes_view(request):
     """Отдает страницу заметок (notes.html)"""
-    return render(request, 'notes.html')
+    return render(request, 'notes.html', {'active_page': 'notes'})
 
 def tasks_view(request):
     """Отдает страницу задач (tasks.html)"""
-    return render(request, 'tasks.html')
+    return render(request, 'tasks.html', {'active_page': 'tasks'})
 
 def settings_view(request):
     """Отдает страницу настроек (settings.html)"""
-    return render(request, 'settings.html')
+    return render(request, 'settings.html', {'active_page': 'settings'})
 
 # --- API ДЛЯ ОБЩЕНИЯ С ИИ ---
 
