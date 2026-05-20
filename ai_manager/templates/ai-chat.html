@@ -77,4 +77,82 @@
       </form>
     </section>
   </main>
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('.chat-input-form');
+    const input = document.getElementById('chat-input');
+    const chatFeed = document.querySelector('.chat-feed');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Останавливаем перезагрузку страницы
+        
+        const message = input.value.trim();
+        if (!message) return; // Если пусто, ничего не делаем
+
+        // 1. Рисуем сообщение пользователя в чате
+        appendMessage('user', message);
+        input.value = ''; // Очищаем поле ввода
+
+        // 2. Рисуем "заглушку", пока ИИ думает
+        const loadingId = appendMessage('ai', 'Thinking... (это может занять пару минут)');
+
+        try {
+            // 3. Отправляем запрос на наш Django бэкенд
+            const response = await fetch('/api/send-message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await response.json();
+            
+            // 4. Заменяем "Thinking..." на реальный ответ от Ollama
+            updateMessage(loadingId, data.reply || data.message);
+            
+        } catch (error) {
+            updateMessage(loadingId, '❌ Ошибка соединения с мозгом.');
+            console.error(error);
+        }
+    });
+
+    // Функция для добавления нового пузыря сообщения в чат
+    function appendMessage(sender, text) {
+        const id = 'msg-' + Date.now();
+        const isAI = sender === 'ai';
+        const avatar = isAI ? '✨' : '👤';
+        const msgClass = isAI ? 'ai-message' : 'user-message';
+        
+        const html = `
+            <article class="message ${msgClass}" id="${id}">
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-bubble">
+                    <p>${text.replace(/\n/g, '<br>')}</p>
+                </div>
+            </article>
+        `;
+        chatFeed.insertAdjacentHTML('beforeend', html);
+        chatFeed.scrollTop = chatFeed.scrollHeight; // Скроллим чат в самый низ
+        return id;
+    }
+
+    // Функция для обновления текста в сообщении (используется для замены "Thinking...")
+    function updateMessage(id, text) {
+        const msgEl = document.getElementById(id);
+        if (msgEl) {
+            msgEl.querySelector('.message-bubble p').innerHTML = text.replace(/\n/g, '<br>');
+        }
+    }
+    
+    // Отправка по кнопке Enter (Shift+Enter делает перенос строки)
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+    });
+});
+</script>
 {% endblock %}

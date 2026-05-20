@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
@@ -25,7 +26,7 @@ def settings_view(request):
     return render(request, 'settings.html', {'active_page': 'settings'})
 
 # --- API ДЛЯ ОБЩЕНИЯ С ИИ ---
-
+@csrf_exempt
 def api_chat_message(request):
     """
     Принимает POST-запрос с текстом от пользователя, 

@@ -12,3 +12,7 @@ __pycache__/
 
 # Секреты (ключи API)
 .env
+
+# Данные RAG-системы
+obsidian_data/
+chroma_db/
