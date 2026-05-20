@@ -8,5 +8,7 @@ urlpatterns = [
     path('tasks/', views.tasks_view, name='tasks'),
     path('settings/', views.settings_view, name='settings'),
     
+    # API эндпоинты
     path('api/send-message/', views.api_chat_message, name='api_send_message'),
+    path('api/save-settings/', views.api_save_settings, name='api_save_settings'),
 ]

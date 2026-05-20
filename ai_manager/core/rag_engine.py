@@ -24,6 +24,24 @@ GITHUB_REPO_URL = "https://github.com/Lol4ik0/myObsidian.git"
 Settings.llm = Ollama(model="llama3", request_timeout=1200.0)
 Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
 
+CONFIG_FILE = os.path.join(BASE_DIR, 'app_config.json') # Добавь эту строчку к путями
+
+_chat_engine = None
+
+def load_ai_settings():
+    try:
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return data.get('ai_model', 'llama3'), float(data.get('temperature', 0.7))
+    except:
+        pass
+    return "llama3", 0.7
+
+def reset_chat_engine():
+    global _chat_engine
+    _chat_engine = None
+
 def initialize_index():
     # 1. СНАЧАЛА СКАЧИВАЕМ/ОБНОВЛЯЕМ ЗАМЕТКИ ИЗ GITHUB
     sync_obsidian_repo(GITHUB_REPO_URL, NOTES_DIR)
@@ -48,36 +66,36 @@ def initialize_index():
     return index
 
 
-# Глобальная переменная для хранения памяти чата
-_chat_engine = None
-
 def ask_second_brain(user_query):
     global _chat_engine
     
     try:
-        # Если чат запускается впервые, инициализируем базу и создаем движок с памятью
         if _chat_engine is None:
+            model_name, temperature = load_ai_settings()
+            print(f"🤖 Запуск ИИ. Модель: {model_name}, Темп: {temperature}")
+            
+            # Динамически применяем настройки
+            Settings.llm = Ollama(model=model_name, temperature=temperature, request_timeout=600.0)
+            Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
+            
             db = chromadb.PersistentClient(path=DB_DIR)
             chroma_collection = db.get_collection("second_brain")
             vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
             index = VectorStoreIndex.from_vector_store(vector_store)
             
-            # ВАЖНО: Используем as_chat_engine вместо as_query_engine
-            # chat_mode="context" заставляет ИИ держать в оперативной памяти историю текущей беседы
             _chat_engine = index.as_chat_engine(
                 chat_mode="context",
                 similarity_top_k=3,
                 system_prompt=(
                     "Ты — персональный ИИ-ассистент 'Second Brain'. "
                     "Отвечай на вопросы пользователя ТОЛЬКО опираясь на предоставленный контекст. "
-                    "Если в контексте нет ответа, честно скажи: 'В твоих заметках нет информации об этом'. Отвечай на русском языке."
+                    "Если в контексте нет ответа, честно скажи: 'В твоих заметках нет информации об этом'."
                 )
             )
         
-        # ВАЖНО: Используем метод .chat() вместо .query()
         response = _chat_engine.chat(user_query)
         return str(response)
         
     except Exception as e:
         print(f"Ошибка RAG: {e}")
-        return "Система еще не проиндексирована. Пожалуйста, проверьте наличие заметок."
+        return "Произошла ошибка конфигурации ИИ."
