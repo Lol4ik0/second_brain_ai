@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ config.theme }}" data-accent="{{ config.accent_color|default:'cyan' }}">
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Second Brain{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body>
-    <div id="app-wrapper">
+<body class="bg-[var(--bg-base)] text-[var(--text-secondary)] font-sans h-screen overflow-hidden transition-colors duration-300">
+    <div id="app-wrapper" class="flex h-screen w-screen">
         {% include "sidebar.html" with active=active_page %}
-
-        {% block content %}
-        {% endblock %}
+        
+        <div class="flex-1 overflow-y-auto relative">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-[var(--active-accent)] opacity-5 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-96 h-96 bg-purple-500 opacity-5 rounded-full blur-[100px] pointer-events-none"></div>
+            
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 </body>
 </html>

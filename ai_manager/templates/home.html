@@ -1,119 +1,85 @@
 {% extends 'base.html' %}
-{% block title %}
-  Second Brain - Knowledge Manager
-{% endblock %}
+{% load static %}
+
+{% block title %}Second Brain - Home{% endblock %}
+
 {% block content %}
-  <main id="main-content">
-    <section id="view-home">
-      <header class="page-header">
-        <h2>Welcome back</h2>
-        <p>Here's what's happening with your second brain today</p>
-        <div class="search-container">
-          <input type="search" placeholder="Search notes, tasks, or ask AI..." />
+<main class="p-8 lg:p-12 max-w-7xl mx-auto w-full relative z-10">
+    <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h2 class="text-3xl font-bold text-[var(--text-primary)] mb-2">Welcome back, {{ config.display_name|default:"Alex" }}</h2>
+            <p class="text-[var(--text-secondary)]">Here's what's happening with your second brain today.</p>
         </div>
-      </header>
-
-      <div class="dashboard-widgets">
-        <article class="widget">
-          <h3>Today's Tasks</h3>
-          <ul class="task-list">
-            <li>
-              <input type="checkbox" id="task1" /> <label for="task1">Review project proposal</label>
-            </li>
-            <li>
-              <input type="checkbox" id="task2" checked /> <label for="task2"><del>Update documentation</del></label>
-            </li>
-            <li>
-              <input type="checkbox" id="task3" /> <label for="task3">Team standup meeting</label>
-            </li>
-            <li>
-              <input type="checkbox" id="task4" /> <label for="task4">Code review for PR #234</label>
-            </li>
-          </ul>
-        </article>
-
-        <article class="widget">
-          <h3>Recent Notes</h3>
-          <ul class="notes-list">
-            <li>
-              <strong>AI Development Roadmap</strong><br />
-              <small>2 hours ago</small>
-            </li>
-            <li>
-              <strong>Meeting Notes - Q1 Planning</strong><br />
-              <small>5 hours ago</small>
-            </li>
-            <li>
-              <strong>Research: Neural Networks</strong><br />
-              <small>1 day ago</small>
-            </li>
-            <li>
-              <strong>Personal Goals 2026</strong><br />
-              <small>2 days ago</small>
-            </li>
-          </ul>
-        </article>
-
-        <article class="widget ai-summary-widget">
-          <h3>AI Summary</h3>
-          <p>
-            You have <strong>4 tasks</strong> due today and <strong>12 notes</strong> modified this week.
-          </p>
-          <p>
-            Top focus area: <strong>AI Development</strong> with 8 related notes.
-          </p>
-          <button type="button">Generate Full Report</button>
-        </article>
-      </div>
-
-      <section class="project-board">
-        <h3>Project Board</h3>
-        <div class="kanban-grid">
-          <div class="kanban-column">
-            <h4>To Do <span class="count">3</span></h4>
-            <div class="kanban-card">
-              <p>Design new dashboard layout</p>
-              <span class="tag tag-high">high</span>
-            </div>
-            <div class="kanban-card">
-              <p>Write API documentation</p>
-              <span class="tag tag-medium">medium</span>
-            </div>
-            <div class="kanban-card">
-              <p>Update user guide</p>
-              <span class="tag tag-low">low</span>
-            </div>
-          </div>
-
-          <div class="kanban-column">
-            <h4>In Progress <span class="count">2</span></h4>
-            <div class="kanban-card">
-              <p>Implement dark mode</p>
-              <span class="tag tag-high">high</span>
-            </div>
-            <div class="kanban-card">
-              <p>Fix authentication bug</p>
-              <span class="tag tag-high">high</span>
-            </div>
-          </div>
-
-          <div class="kanban-column">
-            <h4>Done <span class="count">3</span></h4>
-            <div class="kanban-card">
-              <p>Setup project repository</p>
-              <span class="tag tag-medium">medium</span>
-            </div>
-            <div class="kanban-card">
-              <p>Create wireframes</p>
-              <span class="tag tag-low">low</span>
-            </div>
-            <div class="kanban-card">
-              <p>Initial component library</p>
-              <span class="tag tag-medium">medium</span>
-            </div>
-          </div>
+        <div class="w-full md:w-96 relative">
+            <span class="absolute left-3 top-2.5 opacity-50">🔍</span>
+            <input type="search" placeholder="Search notes, tasks, or ask AI..." class="input-field rounded-full pl-10 pr-4 py-2 w-full" />
         </div>
-      </section>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <article class="glass-card rounded-xl p-6">
+            <h3 class="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border-glass)] pb-2">Today's Tasks</h3>
+            <ul class="flex flex-col gap-3">
+                <li class="flex items-center gap-3"><input type="checkbox" /> <span>Review project proposal</span></li>
+                <li class="flex items-center gap-3 opacity-50"><input type="checkbox" checked /> <del>Update documentation</del></li>
+                <li class="flex items-center gap-3"><input type="checkbox" /> <span>Team standup meeting</span></li>
+            </ul>
+        </article>
+
+        <article class="glass-card rounded-xl p-6">
+            <h3 class="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border-glass)] pb-2">Recent Notes</h3>
+            <ul class="flex flex-col gap-4">
+                <li>
+                    <p class="font-semibold text-[var(--text-primary)]">AI Development Roadmap</p>
+                    <span class="text-xs text-[var(--active-accent)]">2 hours ago</span>
+                </li>
+                <li>
+                    <p class="font-semibold text-[var(--text-primary)]">Research: Neural Networks</p>
+                    <span class="text-xs text-[var(--active-accent)]">1 day ago</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="glass-card rounded-xl p-6 border-[var(--active-accent)] shadow-[var(--glow-active)]">
+            <h3 class="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border-glass)] pb-2 flex items-center gap-2">
+                <span>✨</span> AI Summary
+            </h3>
+            <p class="mb-2 leading-relaxed">You have <strong class="text-[var(--text-primary)]">4 tasks</strong> due today and <strong class="text-[var(--text-primary)]">12 notes</strong> modified this week.</p>
+            <p class="mb-6 leading-relaxed">Top focus area: <strong class="text-[var(--active-accent)]">AI Development</strong></p>
+            <button type="button" class="btn-primary w-full py-2 rounded-lg text-sm uppercase tracking-wide font-bold">Generate Full Report</button>
+        </article>
+    </div>
+
+    <section>
+        <h3 class="text-xl font-bold text-[var(--text-primary)] mb-6">Project Board</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="flex flex-col gap-4">
+                <h4 class="font-semibold flex items-center justify-between">To Do <span class="bg-[var(--bg-glass)] px-2 py-1 rounded text-xs">3</span></h4>
+                <div class="glass-card rounded-lg p-4">
+                    <p class="text-[var(--text-primary)] font-medium mb-3">Design new dashboard layout</p>
+                    <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-red-500 bg-opacity-20 text-red-400 border border-red-500 border-opacity-30">High</span>
+                </div>
+                <div class="glass-card rounded-lg p-4">
+                    <p class="text-[var(--text-primary)] font-medium mb-3">Write API documentation</p>
+                    <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-yellow-500 bg-opacity-20 text-yellow-400 border border-yellow-500 border-opacity-30">Medium</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <h4 class="font-semibold flex items-center justify-between">In Progress <span class="bg-[var(--bg-glass)] px-2 py-1 rounded text-xs">1</span></h4>
+                <div class="glass-card rounded-lg p-4 border-[var(--active-accent)]">
+                    <p class="text-[var(--text-primary)] font-medium mb-3">Implement Tailwind styling</p>
+                    <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-[var(--active-accent)] bg-opacity-20 text-[var(--active-accent)] border border-[var(--active-accent)] border-opacity-30">Active</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <h4 class="font-semibold flex items-center justify-between">Done <span class="bg-[var(--bg-glass)] px-2 py-1 rounded text-xs">2</span></h4>
+                <div class="glass-card rounded-lg p-4 opacity-60">
+                    <p class="text-[var(--text-primary)] font-medium mb-3 line-through">Setup Django project</p>
+                </div>
+            </div>
+        </div>
     </section>
-  </main>
+</main>
 {% endblock %}

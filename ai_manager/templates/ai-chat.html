@@ -1,80 +1,68 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}
-  Second Brain - AI Chat
-{% endblock %}
+
+{% block title %}Second Brain - AI Chat{% endblock %}
+
 {% block content %}
-  <main class="ai-chat-workspace">
-    <aside class="chat-context-panel">
-      <header>
-        <h2>Context</h2>
-        <p class="subtitle">Documents being analyzed</p>
-      </header>
+<main class="h-full flex flex-col lg:flex-row relative z-10 p-4 lg:p-8 gap-6">
+    
+    <aside class="w-full lg:w-80 flex flex-col gap-6">
+        <header>
+            <h2 class="text-2xl font-bold text-[var(--text-primary)]">Context</h2>
+            <p class="text-sm mt-1">Documents being analyzed</p>
+        </header>
 
-      <ul class="context-document-list">
-        <li class="document-card">
-          <span class="doc-icon" aria-hidden="true">📄</span>
-          <div class="doc-details">
-            <span class="doc-title">Neural Networks.md</span>
-            <span class="doc-type">note</span>
-          </div>
-        </li>
-        <li class="document-card">
-          <span class="doc-icon" aria-hidden="true">📄</span>
-          <div class="doc-details">
-            <span class="doc-title">AI Development Roadmap.md</span>
-            <span class="doc-type">note</span>
-          </div>
-        </li>
-        <li class="document-card">
-          <span class="doc-icon" aria-hidden="true">📄</span>
-          <div class="doc-details">
-            <span class="doc-title">Research Paper - Transformers.pdf</span>
-            <span class="doc-type">pdf</span>
-          </div>
-        </li>
-      </ul>
+        <ul class="flex flex-col gap-3">
+            <li class="glass-card rounded-lg p-3 flex items-center gap-3">
+                <span class="text-xl">📄</span>
+                <div class="flex flex-col">
+                    <span class="font-medium text-[var(--text-primary)] text-sm">Neural Networks.md</span>
+                    <span class="text-xs opacity-60 uppercase tracking-wide">note</span>
+                </div>
+            </li>
+            <li class="glass-card rounded-lg p-3 flex items-center gap-3">
+                <span class="text-xl">📄</span>
+                <div class="flex flex-col">
+                    <span class="font-medium text-[var(--text-primary)] text-sm">Transformers.pdf</span>
+                    <span class="text-xs opacity-60 uppercase tracking-wide">pdf</span>
+                </div>
+            </li>
+        </ul>
 
-      <button type="button" class="btn-add-context">+ Add Documents</button>
+        <button type="button" class="btn-primary w-full py-2 rounded-lg text-sm font-bold border border-dashed">+ Add Documents</button>
 
-      <article class="ai-model-info">
-        <h3><span aria-hidden="true">✨</span> AI Model</h3>
-        <p class="model-name">GPT-4 Turbo</p>
-
-        <dl class="ai-model-info">
-          <dt>Active Model</dt>
-          <dd class="text-cyan">{{ config.ai_model }} (temp: {{ config.temperature }})</dd>
-        </dl>
-      </article>
+        <article class="glass-card rounded-xl p-4 mt-auto border-[var(--active-accent)]">
+            <h3 class="font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2"><span>✨</span> Active Core</h3>
+            <p class="text-sm font-medium text-[var(--active-accent)]">{{ config.ai_model|upper }}</p>
+            <p class="text-xs mt-1">Temp: {{ config.temperature }}</p>
+        </article>
     </aside>
 
-    <section class="chat-interface">
-      <header class="chat-header">
-        <h2>AI Chat</h2>
-        <p class="subtitle">Ask questions about your knowledge base</p>
-      </header>
+    <section class="flex-1 flex flex-col glass-card rounded-2xl overflow-hidden shadow-2xl relative">
+        <header class="p-6 border-b border-[var(--border-glass)] bg-[var(--bg-glass)] backdrop-blur-md z-20">
+            <h2 class="text-xl font-bold text-[var(--text-primary)]">Terminal Chat</h2>
+            <p class="text-sm opacity-80">Ask questions directly to your knowledge base.</p>
+        </header>
 
-      <div class="chat-feed">
-        <article class="message ai-message">
-          <div class="message-avatar">✨</div>
-          <div class="message-bubble">
-            <p>Hello! I'm your AI assistant. I've analyzed the 3 documents you've selected. What would you like to know?</p>
-          </div>
-        </article>
-      </div>
-
-      <form class="chat-input-form">
-        <div class="input-wrapper">
-          <textarea placeholder="Ask your Second Brain..." rows="1" id="chat-input"></textarea>
-
-          <div class="input-footer">
-            <span class="keyboard-hint">Press <kbd>Enter</kbd> to send, <kbd>Shift</kbd>+<kbd>Enter</kbd> for new line</span>
-            <button type="submit" class="btn-send" aria-label="Send message"><span aria-hidden="true">➤</span></button>
-          </div>
+        <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6 chat-feed" id="chat-feed">
+            <article class="flex gap-4 ai-message">
+                <div class="text-2xl mt-1">✨</div>
+                <div class="glass-card rounded-2xl rounded-tl-none p-4 max-w-[85%] border-[var(--active-accent)] shadow-[var(--glow-active)]">
+                    <p class="text-[var(--text-primary)] leading-relaxed">Hello! I'm your AI assistant running on <strong class="text-[var(--active-accent)]">{{ config.ai_model }}</strong>. I've analyzed your selected documents. What would you like to know?</p>
+                </div>
+            </article>
         </div>
-      </form>
-    </section>
-  </main>
 
-  <script src="{% static 'js/chat.js' %}"></script>
+        <div class="p-4 border-t border-[var(--border-glass)] bg-[var(--bg-sidebar)]">
+            <form class="chat-input-form relative flex items-end gap-2">
+                <textarea id="chat-input" rows="1" placeholder="Type your query..." class="input-field w-full rounded-xl py-4 pl-4 pr-16 resize-none min-h-[60px]"></textarea>
+                <button type="submit" class="absolute right-2 bottom-2 bg-[var(--active-accent)] text-black w-10 h-10 rounded-lg flex items-center justify-center font-bold hover:scale-105 transition-transform shadow-[var(--glow-active)]">
+                    ➤
+                </button>
+            </form>
+            <p class="text-xs text-center mt-3 opacity-50">Press <kbd class="bg-[var(--bg-glass)] px-1 rounded">Enter</kbd> to send, <kbd class="bg-[var(--bg-glass)] px-1 rounded">Shift+Enter</kbd> for new line.</p>
+        </div>
+    </section>
+
+</main>
 {% endblock %}

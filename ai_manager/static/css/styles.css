@@ -1,318 +1,103 @@
 /* ==========================================================================
-   1. VARIABLES & RESET
+   1. GLOBAL VARIABLES & THEMES
    ========================================================================== */
 :root {
+    /* Default Cyberpunk Dark */
     --bg-base: #0D0D12;
     --bg-sidebar: rgba(13, 13, 18, 0.85);
     --bg-glass: rgba(20, 20, 30, 0.4);
     --text-primary: #FFFFFF;
     --text-secondary: #A0A0B0;
-    --font-main: 'Inter', 'Roboto Mono', sans-serif;
-
+    
     --neon-cyan: #00F0FF;
     --neon-purple: #B026FF;
     --neon-green: #00FF41;
     --neon-red: #FF2A5F;
 
-    --border-glass: 1px solid rgba(255, 255, 255, 0.08);
-    --glow-cyan: 0 0 10px rgba(0, 240, 255, 0.3), inset 0 0 5px rgba(0, 240, 255, 0.1);
-    --glow-purple: 0 0 10px rgba(176, 38, 255, 0.3);
+    --border-glass: rgba(255, 255, 255, 0.08);
+    
+    /* Default Accent */
+    --active-accent: var(--neon-cyan);
+    --glow-active: 0 0 15px rgba(0, 240, 255, 0.3);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Light Theme Overrides */
+[data-theme="light"] {
+    --bg-base: #F8FAFC;
+    --bg-sidebar: #FFFFFF;
+    --bg-glass: rgba(255, 255, 255, 0.8);
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --border-glass: rgba(0, 0, 0, 0.1);
 }
 
-body {
-    background: var(--bg-base);
-    color: var(--text-secondary);
-    font-family: var(--font-main);
-    height: 100vh;
-    overflow: hidden;
+/* Accent Color Overrides */
+[data-accent="purple"] {
+    --active-accent: var(--neon-purple);
+    --glow-active: 0 0 15px rgba(176, 38, 255, 0.3);
 }
-
-h1, h2, h3, h4 {
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    font-weight: 600;
+[data-accent="green"] {
+    --active-accent: var(--neon-green);
+    --glow-active: 0 0 15px rgba(0, 255, 65, 0.3);
 }
-
-a {
-    color: var(--neon-cyan);
-    text-decoration: none;
-    transition: 0.2s ease;
-}
-
-ul {
-    list-style: none;
+[data-accent="cyan"] {
+    --active-accent: var(--neon-cyan);
+    --glow-active: 0 0 15px rgba(0, 240, 255, 0.3);
 }
 
 /* ==========================================================================
-   2. LAYOUTS & GRIDS (Объединенные сетки)
+   2. CUSTOM COMPONENTS (Used alongside Tailwind)
    ========================================================================== */
-#app-wrapper, #app-container {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-}
-
-main {
-    flex: 1;
-    padding: 2rem 3rem;
-    overflow-y: auto;
-    background: radial-gradient(circle at top right, rgba(0, 240, 255, 0.03), transparent 40%), radial-gradient(circle at bottom left, rgba(176, 38, 255, 0.03), transparent 40%);
-}
-
-/* 3 колонки (Главная) */
-.dashboard-widgets, .kanban-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin: 1.5rem 0;
-}
-
-/* Разделенные экраны (Заметки и Чат) */
-.notes-layout, .chat-layout-split {
-    display: grid;
-    gap: 2rem;
-    height: 100%;
-}
-
-.notes-layout {
-    grid-template-columns: 250px 1fr 250px;
-}
-
-.chat-layout-split {
-    grid-template-columns: 300px 1fr;
-}
-
-.flex-col {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-/* ==========================================================================
-   3. GLASSMORPHISM CARDS (Единый стиль для всех карточек)
-   ========================================================================== */
-.widget, .task-card, .settings-card, .mention-card, .kanban-card, .document-card, .ai-model-info, .message-bubble {
+.glass-card {
     background: var(--bg-glass);
     backdrop-filter: blur(16px);
-    border: var(--border-glass);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.widget:hover, .task-card:hover, .mention-card:hover, .document-card:hover {
+.glass-card:hover {
     border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
 }
 
-.ai-summary-widget {
-    border-color: rgba(176, 38, 255, 0.3);
-    box-shadow: var(--glow-purple);
+[data-theme="light"] .glass-card {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* ==========================================================================
-   4. UI COMPONENTS (Кнопки, Инпуты, Теги)
-   ========================================================================== */
-input, textarea, select {
-    width: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    border: var(--border-glass);
+.input-field {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-glass);
     color: var(--text-primary);
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    outline: none;
-    font-family: inherit;
     transition: 0.3s ease;
 }
 
-input:focus, textarea:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: var(--glow-cyan);
+[data-theme="light"] .input-field {
+    background: rgba(0, 0, 0, 0.05);
 }
 
-button {
-    background: transparent;
-    border: 1px solid var(--neon-purple);
-    color: var(--neon-purple);
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: rgba(176, 38, 255, 0.1);
-    box-shadow: var(--glow-purple);
+.input-field:focus {
+    border-color: var(--active-accent);
+    box-shadow: var(--glow-active);
+    outline: none;
 }
 
 .btn-primary {
-    color: var(--neon-cyan);
-    border-color: var(--neon-cyan);
+    background: transparent;
+    border: 1px solid var(--active-accent);
+    color: var(--active-accent);
+    transition: 0.3s ease;
 }
 
 .btn-primary:hover {
-    background: rgba(0, 240, 255, 0.1);
-    box-shadow: var(--glow-cyan);
+    background: var(--active-accent);
+    color: #000;
+    box-shadow: var(--glow-active);
 }
 
-.badge, .tag {
-    display: inline-block;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    margin-right: 0.5rem;
-}
-
-.priority-high, .tag-high {
-    color: var(--neon-red);
-    background: rgba(255, 42, 95, 0.1);
-    border: 1px solid rgba(255, 42, 95, 0.3);
-}
-
-.priority-medium, .tag-medium {
-    color: var(--neon-cyan);
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid rgba(0, 240, 255, 0.3);
-}
-
-.priority-low, .tag-low {
-    color: var(--neon-green);
-    background: rgba(0, 255, 65, 0.1);
-    border: 1px solid rgba(0, 255, 65, 0.3);
-}
-
-.category-purple {
-    color: var(--neon-purple);
-    background: rgba(176, 38, 255, 0.1);
-    border: 1px solid rgba(176, 38, 255, 0.3);
-}
-
-/* PROGRESS BAR */
-progress {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-progress::-webkit-progress-value {
-    background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-    border-radius: 3px;
-    box-shadow: 0 0 8px var(--neon-cyan);
-}
-
-/* ==========================================================================
-   5. SPECIFIC ELEMENTS (Сайдбар, Чат, Заметки)
-   ========================================================================== */
-.main-sidebar {
-    width: 260px;
-    background: var(--bg-sidebar);
-    padding: 2rem 1.5rem;
-    border-right: var(--border-glass);
-    display: flex;
-    flex-direction: column;
-}
-
-.main-nav a {
-    display: block;
-    padding: 0.75rem 1rem;
-    color: var(--text-secondary);
-    border-radius: 8px;
-    border: 1px solid transparent;
-}
-
-.main-nav a:hover, .main-nav li.active a {
-    color: var(--neon-cyan);
-    background: rgba(0, 240, 255, 0.05);
-    border-color: rgba(0, 240, 255, 0.2);
-    box-shadow: var(--glow-cyan);
-}
-
-.message {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.message-bubble {
-    max-width: 70%;
-    padding: 1rem;
-}
-
-.ai-message .message-bubble {
-    border-color: rgba(0, 240, 255, 0.2);
-}
-
-.user-message {
-    justify-content: flex-end;
-}
-
-.user-message .message-bubble {
-    background: rgba(176, 38, 255, 0.1);
-    border-color: rgba(176, 38, 255, 0.3);
-}
-
-.text-cyan {
-    color: var(--neon-cyan);
-}
-
-.text-purple {
-    color: var(--neon-purple);
-}
-
-.storage-indicator {
-    margin-top: auto;
-    border-top: var(--border-glass);
-    padding-top: 1rem;
-}
-
-/* ==========================================================================
-   6. ВОЗВРАЩАЕМ ОТСТУПЫ (SPACING & BREATHING ROOM)
-   ========================================================================== */
-p { 
-    margin-bottom: 0.8rem; 
-}
-p:last-child { 
-    margin-bottom: 0; 
-}
-
-.task-list li, .notes-list li {
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.8rem;
-}
-
-.kanban-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    align-items: flex-start;
-}
-
-.project-board h3 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-}
-
-.main-nav li {
-    margin-bottom: 0.5rem;
-}
-
-.widget h3 {
-    margin-bottom: 1.2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding-bottom: 0.8rem;
+/* Custom Checkbox / Radio styling */
+input[type="radio"], input[type="checkbox"] {
+    accent-color: var(--active-accent);
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
 }

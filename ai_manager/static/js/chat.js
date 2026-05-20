@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('.chat-input-form');
     const input = document.getElementById('chat-input');
-    const chatFeed = document.querySelector('.chat-feed');
+    const chatFeed = document.getElementById('chat-feed');
 
     if (!form) return;
 
@@ -11,15 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = input.value.trim();
         if (!message) return;
 
-        // 1. Рисуем сообщение пользователя
+        // Draw User message
         appendMessage('user', message);
         input.value = '';
 
-        // 2. Рисуем заглушку ИИ с уникальным ID
-        const loadingId = appendMessage('ai', 'Thinking... (это может занять время)');
+        // Draw AI loading placeholder
+        const loadingId = appendMessage('ai', 'Processing logical cores...');
 
         try {
-            // ИСПРАВЛЕНО: Добавлен слеш / в начале пути к API
             const response = await fetch('/api/send-message/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -30,26 +29,31 @@ document.addEventListener('DOMContentLoaded', () => {
             updateMessage(loadingId, data.reply || data.message);
             
         } catch (error) {
-            updateMessage(loadingId, '❌ Ошибка соединения с локальной моделью.');
+            updateMessage(loadingId, '❌ Connection to local AI core failed.');
             console.error(error);
         }
     });
 
     function appendMessage(sender, text) {
-        // Гарантированно уникальный ID для каждого сообщения
         const id = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         const isAI = sender === 'ai';
         const avatar = isAI ? '✨' : '👤';
-        const msgClass = isAI ? 'ai-message' : 'user-message';
         
+        // Use Tailwind / Glassmorphism logic based on sender
+        const alignmentClass = isAI ? 'self-start' : 'self-end flex-row-reverse';
+        const bubbleStyle = isAI 
+            ? 'rounded-tl-none border-[var(--active-accent)] shadow-[var(--glow-active)]' 
+            : 'rounded-tr-none bg-[var(--active-accent)] bg-opacity-10 border border-[var(--active-accent)]';
+
         const html = `
-            <article class="message ${msgClass}" id="${id}">
-                <div class="message-avatar">${avatar}</div>
-                <div class="message-bubble">
-                    <p>${text.replace(/\n/g, '<br>')}</p>
+            <article class="flex gap-4 w-full ${alignmentClass}" id="${id}">
+                <div class="text-2xl mt-1">${avatar}</div>
+                <div class="glass-card rounded-2xl p-4 max-w-[85%] ${bubbleStyle}">
+                    <p class="text-[var(--text-primary)] leading-relaxed">${text.replace(/\n/g, '<br>')}</p>
                 </div>
             </article>
         `;
+        
         chatFeed.insertAdjacentHTML('beforeend', html);
         chatFeed.scrollTop = chatFeed.scrollHeight;
         return id;
@@ -58,16 +62,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateMessage(id, text) {
         const msgEl = document.getElementById(id);
         if (msgEl) {
-            msgEl.querySelector('.message-bubble p').innerHTML = text.replace(/\n/g, '<br>');
+            msgEl.querySelector('p').innerHTML = text.replace(/\n/g, '<br>');
         }
     }
     
+    // Auto-resize textarea and submit on Enter
     if (input) {
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 form.dispatchEvent(new Event('submit'));
             }
+        });
+
+        input.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if(this.value === '') this.style.height = '60px'; // Reset to min-height
         });
     }
 });

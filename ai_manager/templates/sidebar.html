@@ -1,22 +1,47 @@
-<aside class="main-sidebar">
-    <header class="branding">
-        <h1>Second Brain</h1>
-        <p>Knowledge Manager</p>
+<aside class="w-64 lg:w-72 bg-[var(--bg-sidebar)] border-r border-[var(--border-glass)] flex flex-col h-full backdrop-blur-md relative z-10 transition-colors duration-300">
+    <header class="p-6 border-b border-[var(--border-glass)]">
+        <h1 class="text-2xl font-bold text-[var(--text-primary)] tracking-tight">Second Brain</h1>
+        <p class="text-sm text-[var(--active-accent)] font-medium mt-1">Knowledge Manager</p>
     </header>
 
-    <nav class="main-nav">
-        <ul>
-            <li class="{% if active == 'notes' %}active{% endif %}"><a href="{% url 'notes' %}">Notes</a></li>
-            <li class="{% if active == 'home' %}active{% endif %}"><a href="{% url 'home' %}">Home</a></li>
-            <li class="{% if active == 'ai-chat' %}active{% endif %}"><a href="{% url 'chat' %}">AI Chat</a></li>
-            <li class="{% if active == 'settings' %}active{% endif %}"><a href="{% url 'settings' %}">Settings</a></li>
-            <li class="{% if active == 'tasks' %}active{% endif %}"><a href="{% url 'tasks' %}">Tasks</a></li>
+    <nav class="flex-1 overflow-y-auto py-6 px-4">
+        <ul class="flex flex-col gap-2">
+            <li>
+                <a href="{% url 'home' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'home' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                    <span class="mr-2 opacity-80">🏠</span> Home
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'notes' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'notes' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                    <span class="mr-2 opacity-80">📝</span> Notes
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'chat' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'ai-chat' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                    <span class="mr-2 opacity-80">✨</span> AI Chat
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'tasks' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'tasks' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                    <span class="mr-2 opacity-80">✅</span> Tasks
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'settings' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'settings' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                    <span class="mr-2 opacity-80">⚙️</span> Settings
+                </a>
+            </li>
         </ul>
     </nav>
 
-    <div class="storage-indicator">
-        <p>Storage Used</p>
-        <progress value="7.5" max="10">7.5 GB</progress>
-        <p><small>7.5 GB of 10 GB</small></p>
+    <div class="p-6 border-t border-[var(--border-glass)]">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium">Storage Used</span>
+            <span class="text-xs text-[var(--active-accent)]">75%</span>
+        </div>
+        <div class="w-full bg-[var(--bg-base)] rounded-full h-2">
+            <div class="bg-[var(--active-accent)] h-2 rounded-full shadow-[var(--glow-active)] transition-all duration-500" style="width: 75%"></div>
+        </div>
+        <p class="text-xs mt-2 text-center opacity-70">7.5 GB of 10 GB</p>
     </div>
 </aside>

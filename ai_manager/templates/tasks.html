@@ -1,105 +1,65 @@
 {% extends 'base.html' %}
-{% block title %}
-  Second Brain - Tasks
-{% endblock %}
+{% load static %}
+
+{% block title %}Second Brain - Tasks{% endblock %}
+
 {% block content %}
-  <main class="tasks-workspace">
-    <header class="workspace-header">
-      <h1>Tasks</h1>
-      <p>Manage your tasks and stay productive</p>
+<main class="p-8 lg:p-12 max-w-5xl mx-auto w-full relative z-10">
+    <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-2">Tasks</h1>
+            <p class="text-[var(--text-secondary)]">Manage your tasks and stay productive.</p>
+        </div>
+        <button class="btn-primary px-6 py-2 rounded-lg font-bold flex items-center gap-2">
+            <span>+</span> Add New Task
+        </button>
     </header>
 
-    <div class="actions-bar">
-      <button class="btn-primary" type="button"><span aria-hidden="true">+</span> Add New Task</button>
+    <div class="flex flex-col gap-8">
+        <section>
+            <h2 class="text-xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <span>🔥</span> Active Tasks (2)
+            </h2>
+            <div class="flex flex-col gap-4">
+                <article class="glass-card rounded-xl p-5 flex items-start gap-4 hover:border-[var(--active-accent)] transition-colors">
+                    <input type="checkbox" class="mt-1 w-5 h-5" />
+                    <div class="flex-1">
+                        <label class="text-lg font-medium text-[var(--text-primary)] cursor-pointer">Review project proposal</label>
+                        <div class="flex flex-wrap gap-3 mt-3 items-center">
+                            <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-red-500 bg-opacity-20 text-red-400 border border-red-500 border-opacity-30">Urgent</span>
+                            <span class="text-sm">📅 2026-02-24</span>
+                            <span class="text-xs uppercase px-2 py-1 rounded border border-[var(--border-glass)]">#work</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card rounded-xl p-5 flex items-start gap-4 hover:border-[var(--active-accent)] transition-colors">
+                    <input type="checkbox" class="mt-1 w-5 h-5" />
+                    <div class="flex-1">
+                        <label class="text-lg font-medium text-[var(--text-primary)] cursor-pointer">Research Neural Networks</label>
+                        <div class="flex flex-wrap gap-3 mt-3 items-center">
+                            <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-[var(--active-accent)] bg-opacity-20 text-[var(--active-accent)] border border-[var(--active-accent)] border-opacity-30">Learning</span>
+                            <span class="text-sm">📅 2026-02-28</span>
+                            <span class="text-xs uppercase px-2 py-1 rounded border border-[var(--border-glass)]">#ai</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="opacity-60">
+            <h2 class="text-xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <span>✔️</span> Completed
+            </h2>
+            <div class="flex flex-col gap-4">
+                <article class="glass-card rounded-xl p-5 flex items-start gap-4">
+                    <input type="checkbox" checked class="mt-1 w-5 h-5" />
+                    <div class="flex-1">
+                        <label class="text-lg font-medium text-[var(--text-secondary)] line-through cursor-pointer">Update documentation</label>
+                    </div>
+                </article>
+            </div>
+        </section>
     </div>
-
-    <section class="task-group">
-      <h2>Active Tasks (3)</h2>
-
-      <div class="task-list">
-        <article class="task-card">
-          <div class="task-checkbox-wrapper">
-            <input type="checkbox" id="task-prop" name="task-prop" />
-          </div>
-          <div class="task-details">
-            <label for="task-prop" class="task-title">Review project proposal</label>
-            <div class="task-metadata">
-              <span class="badge priority-high">high</span>
-              <span class="meta-item date">📅 2026-02-24</span>
-              <span class="meta-item tag-icon">🏷️</span>
-              <span class="badge category-purple">work</span>
-              <span class="badge category-purple">urgent</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="task-card">
-          <div class="task-checkbox-wrapper">
-            <input type="checkbox" id="task-meet" name="task-meet" />
-          </div>
-          <div class="task-details">
-            <label for="task-meet" class="task-title">Team standup meeting</label>
-            <div class="task-metadata">
-              <span class="badge priority-high">high</span>
-              <span class="meta-item date">📅 2026-02-24</span>
-              <span class="meta-item tag-icon">🏷️</span>
-              <span class="badge category-purple">meetings</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="task-card">
-          <div class="task-checkbox-wrapper">
-            <input type="checkbox" id="task-research" name="task-research" />
-          </div>
-          <div class="task-details">
-            <label for="task-research" class="task-title">Research neural networks</label>
-            <div class="task-metadata">
-              <span class="badge priority-low">low</span>
-              <span class="meta-item date">📅 2026-02-28</span>
-              <span class="meta-item tag-icon">🏷️</span>
-              <span class="badge category-purple">learning</span>
-              <span class="badge category-purple">AI</span>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="task-group completed-group">
-      <h2>Completed (2)</h2>
-
-      <div class="task-list">
-        <article class="task-card completed">
-          <div class="task-checkbox-wrapper">
-            <input type="checkbox" id="task-doc" name="task-doc" checked />
-          </div>
-          <div class="task-details">
-            <label for="task-doc" class="task-title">Update documentation</label>
-            <div class="task-metadata">
-              <span class="badge priority-medium">medium</span>
-              <span class="meta-item date">📅 2026-02-23</span>
-              <span class="meta-item tag-icon">🏷️</span>
-              <span class="badge category-purple">work</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="task-card completed">
-          <div class="task-checkbox-wrapper">
-            <input type="checkbox" id="task-pr" name="task-pr" checked />
-          </div>
-          <div class="task-details">
-            <label for="task-pr" class="task-title">Code review for PR #234</label>
-            <div class="task-metadata">
-              <span class="badge priority-medium">medium</span>
-              <span class="meta-item date">📅 2026-02-25</span>
-              <span class="meta-item tag-icon">🏷️</span>
-              <span class="badge category-purple">development</span>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-  </main>
+</main>
 {% endblock %}
