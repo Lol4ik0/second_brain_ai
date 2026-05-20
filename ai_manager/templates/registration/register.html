@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyberpunk" data-accent="cyan">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second Brain - Establish Operator Identity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-[#0D0D12] h-screen w-screen flex items-center justify-center relative font-sans overflow-hidden">
+    
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00F0FF] opacity-5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#B026FF] opacity-5 rounded-full blur-[120px]"></div>
+
+    <main class="w-full max-w-md p-4 relative z-10">
+        <div class="glass-card rounded-2xl p-8 shadow-2xl border border-white border-opacity-10">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Register Operator</h1>
+                <p class="text-gray-400 text-sm">Deploy a new personal node and database matrix row.</p>
+            </header>
+
+            {% if error %}
+                <div class="mb-6 p-4 rounded-lg bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30 text-red-400 text-sm font-medium">
+                    ⚠️ {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" class="flex flex-col gap-5">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="flex flex-col gap-1">
+                        <label for="{{ field.id_for_label }}" class="text-xs uppercase tracking-wider font-semibold text-gray-300">
+                            {{ field.label }}
+                        </label>
+                        <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                               name="{{ field.html_name }}" 
+                               id="{{ field.id_for_label }}" 
+                               required
+                               class="input-field rounded-xl px-4 py-2.5 w-full bg-black bg-opacity-40 text-white border border-white border-opacity-10 focus:border-[#00F0FF] outline-none transition-all text-sm">
+                        {% if field.help_text %}
+                            <p class="text-[10px] text-gray-500 leading-tight mt-0.5">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-primary w-full py-3.5 mt-2 rounded-xl font-bold uppercase tracking-wider text-sm border border-[#00F0FF] text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+                    Build Core Node
+                </button>
+            </form>
+
+            <footer class="mt-6 text-center border-t border-white border-opacity-5 pt-4">
+                <p class="text-sm text-gray-400">
+                    Already registered? 
+                    <a href="{% url 'login' %}" class="text-[#00F0FF] font-semibold hover:underline ml-1">Access Terminal</a>
+                </p>
+            </footer>
+        </div>
+    </main>
+</body>
+</html>

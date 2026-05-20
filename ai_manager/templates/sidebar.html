@@ -6,34 +6,53 @@
 
     <nav class="flex-1 overflow-y-auto py-6 px-4">
         <ul class="flex flex-col gap-2">
-            <li>
-                <a href="{% url 'home' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'home' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
-                    <span class="mr-2 opacity-80">🏠</span> Home
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'notes' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'notes' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
-                    <span class="mr-2 opacity-80">📝</span> Notes
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'chat' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'ai-chat' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
-                    <span class="mr-2 opacity-80">✨</span> AI Chat
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'tasks' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'tasks' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
-                    <span class="mr-2 opacity-80">✅</span> Tasks
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'settings' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'settings' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
-                    <span class="mr-2 opacity-80">⚙️</span> Settings
-                </a>
-            </li>
+            {% if request.user.is_authenticated %}
+                <li>
+                    <a href="{% url 'home' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'home' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                        <span class="mr-2 opacity-80">🏠</span> Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'notes' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'notes' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                        <span class="mr-2 opacity-80">📝</span> Notes
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'chat' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'ai-chat' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                        <span class="mr-2 opacity-80">✨</span> AI Chat
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'tasks' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'tasks' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                        <span class="mr-2 opacity-80">✅</span> Tasks
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'settings' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'settings' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--active-accent)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
+                        <span class="mr-2 opacity-80">⚙️</span> Settings
+                    </a>
+                </li>
+                <li class="mt-4 border-t border-[var(--border-glass)] pt-4">
+                    <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-lg text-red-400 hover:bg-red-500 hover:bg-opacity-10 hover:text-red-300 transition-all">
+                        <span class="mr-2">🚪</span> Log Out
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'login' %}" class="block px-4 py-3 rounded-lg text-[var(--text-primary)] bg-[var(--bg-glass)] hover:bg-opacity-80">
+                        <span class="mr-2">🔑</span> Sign In
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'register' %}" class="block px-4 py-3 rounded-lg text-[var(--active-accent)] border border-[var(--active-accent)] border-opacity-30 mt-2 hover:bg-[var(--active-accent)] hover:bg-opacity-10">
+                        <span class="mr-2">📝</span> Create Account
+                    </a>
+                </li>
+            {% endif %}
         </ul>
     </nav>
 
+    {% if request.user.is_authenticated %}
     <div class="p-6 border-t border-[var(--border-glass)]">
         <div class="flex justify-between items-center mb-2">
             <span class="text-sm font-medium">Storage Used</span>
@@ -42,6 +61,7 @@
         <div class="w-full bg-[var(--bg-base)] rounded-full h-2">
             <div class="bg-[var(--active-accent)] h-2 rounded-full shadow-[var(--glow-active)] transition-all duration-500" style="width: 75%"></div>
         </div>
-        <p class="text-xs mt-2 text-center opacity-70">7.5 GB of 10 GB</p>
+        <p class="text-xs mt-2 text-center opacity-70">Active session: {{ request.user.username }}</p>
     </div>
+    {% endif %}
 </aside>
