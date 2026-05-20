@@ -5,10 +5,12 @@ import json
 import os
 from . import rag_engine
 
-# Путь к файлу конфигурации (создастся автоматически)
-CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'app_config.json')
+# ИСПРАВЛЕНО: Жестко задаем пути, чтобы избежать NameError
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CONFIG_FILE = os.path.join(BASE_DIR, 'app_config.json')
 
 def load_config():
+    """Загружает настройки из файла"""
     defaults = {
         "display_name": "Alex Chen",
         "email": "alex@example.com",
@@ -20,7 +22,7 @@ def load_config():
         try:
             with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
                 return {**defaults, **json.load(f)}
-        except:
+        except Exception:
             pass
     return defaults
 
@@ -44,20 +46,26 @@ def settings_view(request):
 @csrf_exempt
 def api_chat_message(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        user_message = data.get('message', '')
-        ai_response = rag_engine.ask_second_brain(user_message)
-        return JsonResponse({'status': 'ok', 'reply': ai_response})
+        try:
+            data = json.loads(request.body)
+            user_message = data.get('message', '')
+            ai_response = rag_engine.ask_second_brain(user_message)
+            return JsonResponse({'status': 'ok', 'reply': ai_response})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error'}, status=400)
 
 @csrf_exempt
 def api_save_settings(request):
     if request.method == "POST":
-        new_config = json.loads(request.body)
-        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
-            json.dump(new_config, f, ensure_ascii=False, indent=4)
-        
-        # Сбрасываем память нейросети, чтобы она применила новые настройки
-        rag_engine.reset_chat_engine()
-        return JsonResponse({'status': 'ok'})
+        try:
+            new_config = json.loads(request.body)
+            with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+                json.dump(new_config, f, ensure_ascii=False, indent=4)
+            
+            # Сбрасываем память нейросети
+            rag_engine.reset_chat_engine()
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error'}, status=400)

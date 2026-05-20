@@ -11,14 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = input.value.trim();
         if (!message) return;
 
-        // Рисуем сообщение пользователя
+        // 1. Рисуем сообщение пользователя
         appendMessage('user', message);
         input.value = '';
 
-        // Рисуем заглушку ИИ с УНИКАЛЬНЫМ ID
+        // 2. Рисуем заглушку ИИ с уникальным ID
         const loadingId = appendMessage('ai', 'Thinking... (это может занять время)');
 
         try {
+            // ИСПРАВЛЕНО: Добавлен слеш / в начале пути к API
             const response = await fetch('/api/send-message/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function appendMessage(sender, text) {
-        // Гарантированно уникальный ID
+        // Гарантированно уникальный ID для каждого сообщения
         const id = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         const isAI = sender === 'ai';
         const avatar = isAI ? '✨' : '👤';
@@ -61,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Отправка по Enter
     if (input) {
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {

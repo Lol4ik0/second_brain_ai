@@ -2,14 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const tempSlider = document.getElementById('ai-temperature');
     const tempValue = document.getElementById('temp-value');
 
-    // Обновление цифры температуры при движении ползунка
+    // Обновление цифры температуры на экране при движении ползунка
     if (tempSlider && tempValue) {
         tempSlider.addEventListener('input', (e) => {
             tempValue.textContent = e.target.value;
         });
     }
 
-    // Создаем кнопку сохранения
+    // Автоматически создаем кнопку сохранения
     const saveBtn = document.createElement('button');
     saveBtn.type = 'button';
     saveBtn.className = 'btn-primary';
@@ -25,13 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const config = {
             display_name: document.getElementById('display-name')?.value || 'Alex Chen',
-            email: document.getElementById('email-address')?.value || 'alex.chen@example.com',
+            email: document.getElementById('email-address')?.value || 'alex@example.com',
             theme: document.getElementById('theme-select')?.value || 'cyberpunk',
             ai_model: document.getElementById('ai-model')?.value || 'llama3',
             temperature: tempSlider?.value || 0.7
         };
 
         try {
+            // ИСПРАВЛЕНО: Добавлен слеш / в начале пути
             const response = await fetch('/api/save-settings/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -44,11 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveBtn.style.borderColor = 'var(--neon-green)';
                 saveBtn.style.color = 'var(--neon-green)';
                 
+                // Перезагружаем страницу, чтобы применились новые настройки
                 setTimeout(() => {
-                    saveBtn.textContent = 'SAVE SYSTEM CONFIGURATION';
-                    saveBtn.style.borderColor = 'var(--neon-cyan)';
-                    saveBtn.style.color = 'var(--neon-cyan)';
-                }, 3000);
+                    window.location.reload();
+                }, 1500);
             }
         } catch (error) {
             saveBtn.textContent = 'ERROR SAVING CONFIGURATION';
