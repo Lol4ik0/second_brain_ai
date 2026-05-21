@@ -16,29 +16,17 @@
             <ul class="flex flex-col gap-2 text-sm">
                 <li>
                     <div class="flex items-center gap-2 text-[var(--text-primary)] font-medium cursor-pointer mb-1 hover:text-[var(--active-accent)] transition-colors">
-                        <span>📂</span> AI & Machine Learning
+                        <span>📂</span> Synced Knowledge Base Vault
                     </div>
                     <ul class="ml-6 flex flex-col gap-1 border-l border-[var(--border-glass)] pl-2">
-                        <li class="cursor-pointer text-[var(--active-accent)] bg-[var(--active-accent)] bg-opacity-10 px-2 py-1.5 rounded shadow-[var(--glow-active)] border border-[var(--active-accent)] border-opacity-20 flex items-center gap-2">
-                            <span class="opacity-70">📄</span> Neural Networks
-                        </li>
-                        <li class="cursor-pointer hover:text-[var(--text-primary)] px-2 py-1.5 rounded hover:bg-[var(--bg-glass)] transition-colors flex items-center gap-2">
-                            <span class="opacity-50">📄</span> Transformers
-                        </li>
-                        <li class="cursor-pointer hover:text-[var(--text-primary)] px-2 py-1.5 rounded hover:bg-[var(--bg-glass)] transition-colors flex items-center gap-2">
-                            <span class="opacity-50">📄</span> Deep Learning
-                        </li>
+                        {% for note in user_notes %}
+                            <li class="cursor-pointer hover:text-[var(--text-primary)] px-2 py-1.5 rounded hover:bg-[var(--bg-glass)] transition-colors flex items-center gap-2 {% if forloop.first %}text-[var(--active-accent)] bg-[var(--active-accent)] bg-opacity-10 shadow-[var(--glow-active)] border border-[var(--active-accent)] border-opacity-20{% endif %}">
+                                <span class="opacity-70">📄</span> {{ note }}
+                            </li>
+                        {% empty %}
+                            <li class="text-xs italic opacity-50 px-2 py-1.5">No synced .md files found. Update your repository link in settings.</li>
+                        {% endfor %}
                     </ul>
-                </li>
-                <li class="mt-3">
-                    <div class="flex items-center gap-2 opacity-70 hover:opacity-100 hover:text-[var(--text-primary)] cursor-pointer transition-colors">
-                        <span>📁</span> Projects
-                    </div>
-                </li>
-                <li class="mt-2">
-                    <div class="flex items-center gap-2 opacity-70 hover:opacity-100 hover:text-[var(--text-primary)] cursor-pointer transition-colors">
-                        <span>📁</span> Personal
-                    </div>
                 </li>
             </ul>
         </nav>

@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -85,7 +86,29 @@ def ai_chat_view(request):
 
 @login_required(login_url='login')
 def notes_view(request):
-    return render(request, 'notes.html', {'active_page': 'notes', 'config': get_user_config(request.user)})
+    from .rag_engine import get_user_paths
+    from .git_sync import sync_obsidian_repo
+    
+    paths = get_user_paths(request.user)
+    settings = request.user.settings
+    
+    if settings.github_repo_url and not os.path.exists(paths["notes_dir"]):
+        print(f"Initializing knowledge base for user {request.user.username}...")
+        sync_obsidian_repo(settings.github_repo_url, settings.github_token, paths["notes_dir"])
+
+    synced_notes = []
+    if os.path.exists(paths["notes_dir"]):
+        for root, dirs, files in os.walk(paths["notes_dir"]):
+            for file in files:
+                if file.endswith(".md"):
+                    synced_notes.append(file.replace(".md", ""))
+                    
+    context = {
+        'active_page': 'notes', 
+        'config': get_user_config(request.user),
+        'user_notes': synced_notes[:15]
+    }
+    return render(request, 'notes.html', context)
 
 @login_required(login_url='login')
 def tasks_view(request):
@@ -111,7 +134,9 @@ def api_chat_message(request):
     if request.method == "POST":
         data = json.loads(request.body)
         user_message = data.get('message', '')
-        ai_response = rag_engine.ask_second_brain(user_message)
+        
+        # FIXED: Passing request.user to preserve multi-tenant security layers
+        ai_response = rag_engine.ask_second_brain(user_message, request.user)
         return JsonResponse({'status': 'ok', 'reply': ai_response})
     return JsonResponse({'status': 'error'}, status=400)
 
@@ -122,16 +147,20 @@ def api_save_settings(request):
         data = json.loads(request.body)
         settings = request.user.settings
         
-        # Save into the SQLite Database directly
+        # Save structural parameters
         settings.display_name = data.get('display_name', settings.display_name)
         settings.theme = data.get('theme', settings.theme)
         settings.accent_color = data.get('accent_color', settings.accent_color)
         settings.ai_model = data.get('ai_model', settings.ai_model)
         settings.temperature = float(data.get('temperature', settings.temperature))
+        
+        # NEW: Save security validation parameters for RAG Synchronization
+        settings.github_repo_url = data.get('github_repo_url', settings.github_repo_url).strip()
+        settings.github_token = data.get('github_token', settings.github_token).strip()
         settings.save()
         
-        # Reset current cache engine parameters
-        rag_engine.reset_chat_engine()
+        # Clear specific operational in-memory cache matrices for this user
+        rag_engine.reset_chat_engine(request.user.id)
         return JsonResponse({'status': 'ok'})
     return JsonResponse({'status': 'error'}, status=400)
 

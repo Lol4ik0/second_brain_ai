@@ -11,6 +11,9 @@ class UserSettings(models.Model):
     ai_model = models.CharField(max_length=50, default='llama3')
     temperature = models.FloatField(default=0.7)
 
+    github_repo_url = models.URLField(max_length=500, blank=True, default="")
+    github_token = models.CharField(max_length=255, blank=True, default="")
+
     def __str__(self):
         return f"Settings for {self.user.username}"
 
@@ -49,5 +52,7 @@ def create_user_settings(sender, instance, created, **kwargs):
             theme='cyberpunk',
             accent_color='cyan',
             ai_model='llama3',
-            temperature=0.7
+            temperature=0.7,
+            github_repo_url="",
+            github_token=""
         )

@@ -8,74 +8,84 @@ import chromadb
 from .git_sync import sync_obsidian_repo
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-NOTES_DIR = os.path.join(BASE_DIR, 'obsidian_data') 
 DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
-CONFIG_FILE = os.path.join(BASE_DIR, 'app_config.json')
-GITHUB_REPO_URL = "https://github.com/Lol4ik0/myObsidian.git"
 
-_chat_engine = None
+# Use a multi-tenant dictionary to cache chat engines for active users in memory securely
+_user_chat_engines = {}
 
-def load_ai_settings():
-    """Считывает выбранную на сайте модель и температуру"""
+def reset_chat_engine(user_id=None):
+    global _user_chat_engines
+    if user_id:
+        if user_id in _user_chat_engines:
+            del _user_chat_engines[user_id]
+    else:
+        _user_chat_engines.clear()
+
+def get_user_paths(user):
+    """Generates strictly isolated path points for individual user assets."""
+    user_folder = f"user_{user.id}"
+    return {
+        "notes_dir": os.path.join(BASE_DIR, 'obsidian_data', user_folder),
+        "collection_name": f"collection_user_{user.id}"
+    }
+
+def ask_second_brain(user_query, user):
+    global _user_chat_engines
+    
+    # Extract user-specific settings from the database row
+    settings = user.settings
+    paths = get_user_paths(user)
+    
+    # If this user hasn't set up a repo yet, notify them securely
+    if not settings.github_repo_url:
+        return "System Notification: Please configure your personal GitHub Obsidian repository link in the Settings panel to enable the AI Core."
+
     try:
-        if os.path.exists(CONFIG_FILE):
-            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                return data.get('ai_model', 'llama3'), float(data.get('temperature', 0.7))
-    except:
-        pass
-    return "llama3", 0.7
-
-def reset_chat_engine():
-    """Обнуляет движок чата (вызывается из views.py при сохранении настроек)"""
-    global _chat_engine
-    _chat_engine = None
-
-def initialize_index():
-    sync_obsidian_repo(GITHUB_REPO_URL, NOTES_DIR)
-    documents = SimpleDirectoryReader(NOTES_DIR, required_exts=[".md"], recursive=True).load_data()
-    
-    db = chromadb.PersistentClient(path=DB_DIR)
-    chroma_collection = db.get_or_create_collection("second_brain")
-    
-    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    
-    Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
-    
-    index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
-    print("Индексация успешно завершена!")
-    return index
-
-def ask_second_brain(user_query):
-    global _chat_engine
-    
-    try:
-        if _chat_engine is None:
-            model_name, temperature = load_ai_settings()
-            print(f"🤖 Инициализация ядра ИИ. Модель: {model_name}, Температура: {temperature}")
+        # Check if we need to synchronize and index new data for this specific session
+        if user.id not in _user_chat_engines:
+            print(f"🤖 Initializing dedicated AI Core for User: {user.username} [Model: {settings.ai_model}]")
             
-            Settings.llm = Ollama(model=model_name, temperature=temperature, request_timeout=600.0)
+            # Sync the repository to the user's isolated folder
+            sync_success = sync_obsidian_repo(settings.github_repo_url, settings.github_token, paths["notes_dir"])
+            
+            # Load global LLM parameters
+            Settings.llm = Ollama(model=settings.ai_model, temperature=settings.temperature, request_timeout=600.0)
             Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
             
+            # Connect to ChromaDB client instance
             db = chromadb.PersistentClient(path=DB_DIR)
-            chroma_collection = db.get_collection("second_brain")
-            vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-            index = VectorStoreIndex.from_vector_store(vector_store)
+            chroma_collection = db.get_or_create_collection(paths["collection_name"])
             
-            _chat_engine = index.as_chat_engine(
+            # Read files only if they exist in the directory
+            documents = []
+            if sync_success and os.path.exists(paths["notes_dir"]):
+                documents = SimpleDirectoryReader(paths["notes_dir"], required_exts=[".md"], recursive=True).load_data()
+            
+            vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+            storage_context = StorageContext.from_defaults(vector_store=vector_store)
+            
+            # Create index from user documents or load vectors if documents are empty but store exists
+            if documents:
+                index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
+            else:
+                index = VectorStoreIndex.from_vector_store(vector_store)
+                
+            # Build an isolated contextual chat execution window
+            _user_chat_engines[user.id] = index.as_chat_engine(
                 chat_mode="context",
                 similarity_top_k=3,
                 system_prompt=(
-                    "Ты — персональный ИИ-ассистент 'Second Brain'. "
-                    "Отвечай на вопросы пользователя ТОЛЬКО опираясь на предоставленный контекст заметок. "
-                    "Если в контексте нет ответа, честно скажи: 'В твоих заметках нет информации об этом'. Отвечай на русском языке."
+                    f"You are the secure personal AI Assistant of {user.username}. "
+                    "Answer questions ONLY based on the provided personal notes context. "
+                    "If the answer cannot be found in the user notes context, state: 'No data matching this query found in your synchronized notes database.' "
+                    "Always answer questions in English language."
                 )
             )
         
-        response = _chat_engine.chat(user_query)
+        # Execute chat sequence within the isolated sandbox
+        response = _user_chat_engines[user.id].chat(user_query)
         return str(response)
         
     except Exception as e:
-        print(f"Ошибка RAG: {e}")
-        return f"Произошла ошибка конфигурации ИИ: {str(e)}"
+        print(f"Dedicated Multi-Tenant RAG Error: {str(e)}")
+        return f"Core System Error: Failed to compute query maps inside your data matrix partition. Details: {str(e)}"

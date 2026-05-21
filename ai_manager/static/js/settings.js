@@ -50,7 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             theme: document.getElementById('theme-select')?.value || 'cyberpunk',
             accent_color: selectedAccent,
             ai_model: document.getElementById('ai-model')?.value || 'llama3',
-            temperature: tempSlider?.value || 0.7
+            temperature: tempSlider?.value || 0.7,
+            github_repo_url: document.getElementById('github-repo')?.value || '',
+            github_token: document.getElementById('github-token')?.value || ''
         };
 
         try {
