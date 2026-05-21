@@ -10,7 +10,7 @@
             <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-2">Tasks</h1>
             <p class="text-[var(--text-secondary)]">Manage your tasks and stay productive.</p>
         </div>
-        <button class="btn-primary px-6 py-2 rounded-lg font-bold flex items-center gap-2">
+        <button onclick="document.getElementById('task-modal').classList.remove('hidden')" class="btn-primary px-6 py-2 rounded-lg font-bold flex items-center gap-2">
             <span>+</span> Add New Task
         </button>
     </header>
@@ -18,32 +18,38 @@
     <div class="flex flex-col gap-8">
         <section>
             <h2 class="text-xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-                <span>🔥</span> Active Tasks (2)
+                <span>🔥</span> Active Tasks ({{ active_tasks|length }})
             </h2>
             <div class="flex flex-col gap-4">
+                {% for task in active_tasks %}
                 <article class="glass-card rounded-xl p-5 flex items-start gap-4 hover:border-[var(--active-accent)] transition-colors">
-                    <input type="checkbox" class="mt-1 w-5 h-5" />
+                    <input type="checkbox" class="mt-1 w-5 h-5 task-checkbox" data-id="{{ task.id }}" {% if task.status == 'done' %}checked{% endif %} />
                     <div class="flex-1">
-                        <label class="text-lg font-medium text-[var(--text-primary)] cursor-pointer">Review project proposal</label>
+                        <label class="text-lg font-medium text-[var(--text-primary)] cursor-pointer">{{ task.title }}</label>
                         <div class="flex flex-wrap gap-3 mt-3 items-center">
-                            <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-red-500 bg-opacity-20 text-red-400 border border-red-500 border-opacity-30">Urgent</span>
-                            <span class="text-sm">📅 2026-02-24</span>
-                            <span class="text-xs uppercase px-2 py-1 rounded border border-[var(--border-glass)]">#work</span>
+                            {% if task.priority == 'urgent' %}
+                                <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-red-500 bg-opacity-20 text-red-400 border border-red-500 border-opacity-30">Urgent</span>
+                            {% elif task.priority == 'high' %}
+                                <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-orange-500 bg-opacity-20 text-orange-400 border border-orange-500 border-opacity-30">High</span>
+                            {% elif task.priority == 'medium' %}
+                                <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-blue-500 bg-opacity-20 text-blue-400 border border-blue-500 border-opacity-30">Medium</span>
+                            {% else %}
+                                <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-gray-500 bg-opacity-20 text-gray-400 border border-gray-500 border-opacity-30">Low</span>
+                            {% endif %}
+                            
+                            {% if task.due_date %}
+                                <span class="text-sm">📅 {{ task.due_date|date:"Y-m-d" }}</span>
+                            {% endif %}
+                            
+                            {% if task.tags %}
+                                <span class="text-xs uppercase px-2 py-1 rounded border border-[var(--border-glass)]">#{{ task.tags }}</span>
+                            {% endif %}
                         </div>
                     </div>
                 </article>
-
-                <article class="glass-card rounded-xl p-5 flex items-start gap-4 hover:border-[var(--active-accent)] transition-colors">
-                    <input type="checkbox" class="mt-1 w-5 h-5" />
-                    <div class="flex-1">
-                        <label class="text-lg font-medium text-[var(--text-primary)] cursor-pointer">Research Neural Networks</label>
-                        <div class="flex flex-wrap gap-3 mt-3 items-center">
-                            <span class="text-xs font-bold uppercase px-2 py-1 rounded bg-[var(--active-accent)] bg-opacity-20 text-[var(--active-accent)] border border-[var(--active-accent)] border-opacity-30">Learning</span>
-                            <span class="text-sm">📅 2026-02-28</span>
-                            <span class="text-xs uppercase px-2 py-1 rounded border border-[var(--border-glass)]">#ai</span>
-                        </div>
-                    </div>
-                </article>
+                {% empty %}
+                <p class="text-[var(--text-secondary)] italic">No active tasks! You are all caught up.</p>
+                {% endfor %}
             </div>
         </section>
 
@@ -52,14 +58,53 @@
                 <span>✔️</span> Completed
             </h2>
             <div class="flex flex-col gap-4">
+                {% for task in completed_tasks %}
                 <article class="glass-card rounded-xl p-5 flex items-start gap-4">
-                    <input type="checkbox" checked class="mt-1 w-5 h-5" />
+                    <input type="checkbox" checked class="mt-1 w-5 h-5 task-checkbox" data-id="{{ task.id }}" />
                     <div class="flex-1">
-                        <label class="text-lg font-medium text-[var(--text-secondary)] line-through cursor-pointer">Update documentation</label>
+                        <label class="text-lg font-medium text-[var(--text-secondary)] line-through cursor-pointer">{{ task.title }}</label>
                     </div>
                 </article>
+                {% empty %}
+                <p class="text-[var(--text-secondary)] italic">No completed tasks yet.</p>
+                {% endfor %}
             </div>
         </section>
     </div>
+
+    <div id="task-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-2xl p-8 w-full max-w-md shadow-2xl border-[var(--active-accent)]">
+            <h2 class="text-2xl font-bold text-white mb-6">Create New Task</h2>
+            <form id="add-task-form" class="flex flex-col gap-4">
+                <div>
+                    <label class="text-xs uppercase font-semibold text-gray-400">Task Title</label>
+                    <input type="text" id="task-title" required class="input-field rounded-lg px-4 py-2 w-full mt-1">
+                </div>
+                <div>
+                    <label class="text-xs uppercase font-semibold text-gray-400">Priority</label>
+                    <select id="task-priority" class="input-field rounded-lg px-4 py-2 w-full mt-1">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs uppercase font-semibold text-gray-400">Due Date (Optional)</label>
+                    <input type="date" id="task-date" class="input-field rounded-lg px-4 py-2 w-full mt-1">
+                </div>
+                <div>
+                    <label class="text-xs uppercase font-semibold text-gray-400">Tags (comma separated)</label>
+                    <input type="text" id="task-tags" placeholder="work, coding" class="input-field rounded-lg px-4 py-2 w-full mt-1">
+                </div>
+                <div class="flex gap-4 mt-4">
+                    <button type="button" onclick="document.getElementById('task-modal').classList.add('hidden')" class="flex-1 py-2 rounded-lg font-bold border border-gray-500 text-gray-400 hover:bg-gray-800">Cancel</button>
+                    <button type="submit" class="flex-1 btn-primary py-2 rounded-lg font-bold">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </main>
+
+<script src="{% static 'js/tasks.js' %}"></script>
 {% endblock %}

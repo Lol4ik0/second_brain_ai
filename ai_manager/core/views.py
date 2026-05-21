@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 import json
-from .models import UserSettings
+from .models import UserSettings, Task
 from . import rag_engine
 
 # HELPER: Get active config for the current logged-in user, or default system configurations if anonymous
@@ -67,7 +67,17 @@ def logout_view(request):
 # --- PROTECTED APP PAGES ---
 @login_required(login_url='login')
 def home_view(request):
-    return render(request, 'home.html', {'active_page': 'home', 'config': get_user_config(request.user)})
+    # Fetch tasks for Kanban board
+    tasks = Task.objects.filter(user=request.user)
+    context = {
+        'active_page': 'home', 
+        'config': get_user_config(request.user),
+        'todo_tasks': tasks.filter(status='todo'),
+        'progress_tasks': tasks.filter(status='in_progress'),
+        'done_tasks': tasks.filter(status='done'),
+        'recent_tasks': tasks.order_by('-created_at')[:4]
+    }
+    return render(request, 'home.html', context)
 
 @login_required(login_url='login')
 def ai_chat_view(request):
@@ -79,7 +89,15 @@ def notes_view(request):
 
 @login_required(login_url='login')
 def tasks_view(request):
-    return render(request, 'tasks.html', {'active_page': 'tasks', 'config': get_user_config(request.user)})
+    # Fetch tasks for the list view
+    tasks = Task.objects.filter(user=request.user)
+    context = {
+        'active_page': 'tasks', 
+        'config': get_user_config(request.user),
+        'active_tasks': tasks.exclude(status='done').order_by('due_date'),
+        'completed_tasks': tasks.filter(status='done').order_by('-created_at')[:10]
+    }
+    return render(request, 'tasks.html', context)
 
 @login_required(login_url='login')
 def settings_view(request):
@@ -116,3 +134,34 @@ def api_save_settings(request):
         rag_engine.reset_chat_engine()
         return JsonResponse({'status': 'ok'})
     return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt
+@login_required(login_url='login')
+def api_add_task(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        task = Task.objects.create(
+            user=request.user,
+            title=data.get('title'),
+            priority=data.get('priority', 'medium'),
+            due_date=data.get('due_date') or None,
+            tags=data.get('tags', '')
+        )
+        return JsonResponse({'status': 'ok', 'task_id': task.id})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt
+@login_required(login_url='login')
+def api_update_task_status(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        task_id = data.get('task_id')
+        new_status = data.get('status') # 'todo', 'in_progress', or 'done'
+        
+        try:
+            task = Task.objects.get(id=task_id, user=request.user)
+            task.status = new_status
+            task.save()
+            return JsonResponse({'status': 'ok'})
+        except Task.DoesNotExist:
+            return JsonResponse({'status': 'error', 'msg': 'Task not found'}, status=404)

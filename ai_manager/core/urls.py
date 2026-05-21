@@ -17,4 +17,8 @@ urlpatterns = [
     # API endpoints
     path('api/send-message/', views.api_chat_message, name='api_send_message'),
     path('api/save-settings/', views.api_save_settings, name='api_save_settings'),
+    
+    # NEW TASK APIs
+    path('api/add-task/', views.api_add_task, name='api_add_task'),
+    path('api/update-task/', views.api_update_task_status, name='api_update_task'),
 ]
