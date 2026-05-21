@@ -88,20 +88,34 @@ def ai_chat_view(request):
 def notes_view(request):
     from .rag_engine import get_user_paths
     from .git_sync import sync_obsidian_repo
+    import os # Make sure os is imported
     
     paths = get_user_paths(request.user)
     settings = request.user.settings
     
-    if settings.github_repo_url and not os.path.exists(paths["notes_dir"]):
+    # NEW LOGIC: Check if the hidden '.git' folder exists inside the notes directory.
+    # If not, the repository was never cloned properly, so we must force sync.
+    git_folder = os.path.join(paths["notes_dir"], '.git')
+    
+    if settings.github_repo_url and not os.path.exists(git_folder):
         print(f"Initializing knowledge base for user {request.user.username}...")
         sync_obsidian_repo(settings.github_repo_url, settings.github_token, paths["notes_dir"])
 
+    # Dynamically scan the user's secure directory to find real synced files
     synced_notes = []
     if os.path.exists(paths["notes_dir"]):
         for root, dirs, files in os.walk(paths["notes_dir"]):
             for file in files:
                 if file.endswith(".md"):
+                    # Strip extension for UI beauty
                     synced_notes.append(file.replace(".md", ""))
+                    
+    context = {
+        'active_page': 'notes', 
+        'config': get_user_config(request.user),
+        'user_notes': synced_notes[:15] # Send the first 15 files to the template UI
+    }
+    return render(request, 'notes.html', context)
                     
     context = {
         'active_page': 'notes', 
