@@ -1,11 +1,12 @@
 import os
+import json
+import markdown
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
-import json
 from .models import UserSettings, Task
 from . import rag_engine
 
@@ -208,3 +209,47 @@ def api_update_task_status(request):
             return JsonResponse({'status': 'ok'})
         except Task.DoesNotExist:
             return JsonResponse({'status': 'error', 'msg': 'Task not found'}, status=404)
+        
+        
+@login_required(login_url='login')
+def api_get_note_content(request):
+    """
+    API endpoint to fetch and parse a specific Markdown note for the active user.
+    Converts raw .md text into HTML for frontend injection.
+    """
+    from .rag_engine import get_user_paths
+    
+    note_name = request.GET.get('name')
+    if not note_name:
+        return JsonResponse({'status': 'error', 'msg': 'No note name provided.'}, status=400)
+
+    paths = get_user_paths(request.user)
+    # Ensure the file has the correct markdown extension
+    file_name = f"{note_name}.md" 
+    file_path = None
+    
+    # Securely search for the file within the user's isolated directory
+    if os.path.exists(paths["notes_dir"]):
+        for root, dirs, files in os.walk(paths["notes_dir"]):
+            if file_name in files:
+                file_path = os.path.join(root, file_name)
+                break
+                
+    if not file_path:
+        return JsonResponse({'status': 'error', 'msg': 'Note not found in the secure vault.'}, status=404)
+
+    try:
+        # Read raw markdown content
+        with open(file_path, 'r', encoding='utf-8') as f:
+            raw_markdown = f.read()
+            
+        # Convert markdown to HTML (enabling extensions for tables, code blocks, etc.)
+        html_content = markdown.markdown(raw_markdown, extensions=['fenced_code', 'tables'])
+        
+        return JsonResponse({
+            'status': 'ok',
+            'html_content': html_content,
+            'last_modified': os.path.getmtime(file_path) # Optional metadata
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'msg': str(e)}, status=500)
