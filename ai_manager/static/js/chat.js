@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!form) return;
 
+    if (chatFeed) {
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         

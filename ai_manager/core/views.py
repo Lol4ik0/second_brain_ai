@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .models import UserSettings, Task
+from .models import UserSettings, Task, ChatMessage
 from . import rag_engine
 
 # HELPER: Get active config for the current logged-in user, or default system configurations if anonymous
@@ -83,7 +83,27 @@ def home_view(request):
 
 @login_required(login_url='login')
 def ai_chat_view(request):
-    return render(request, 'ai-chat.html', {'active_page': 'ai-chat', 'config': get_user_config(request.user)})
+    from .rag_engine import get_user_paths
+    import os
+    
+    paths = get_user_paths(request.user)
+    synced_notes = []
+    if os.path.exists(paths["notes_dir"]):
+        for root, dirs, files in os.walk(paths["notes_dir"]):
+            for file in files:
+                if file.endswith(".md"):
+                    synced_notes.append(file.replace(".md", ""))
+                    
+    chat_history = ChatMessage.objects.filter(user=request.user).order_by('-created_at')[:50]
+    chat_history = reversed(chat_history)
+                    
+    context = {
+        'active_page': 'ai-chat', 
+        'config': get_user_config(request.user),
+        'context_files': synced_notes[:10],
+        'chat_history': chat_history
+    }
+    return render(request, 'ai-chat.html', context)
 
 @login_required(login_url='login')
 def notes_view(request):
@@ -150,9 +170,11 @@ def api_chat_message(request):
         data = json.loads(request.body)
         user_message = data.get('message', '')
         
-        # FIXED: Passing request.user to preserve multi-tenant security layers
-        ai_response = rag_engine.ask_second_brain(user_message, request.user)
-        return JsonResponse({'status': 'ok', 'reply': ai_response})
+        if user_message:
+            ChatMessage.objects.create(user=request.user, role='user', content=user_message)
+            ai_response = rag_engine.ask_second_brain(user_message, request.user)
+            ChatMessage.objects.create(user=request.user, role='ai', content=ai_response)
+            return JsonResponse({'status': 'ok', 'reply': ai_response})
     return JsonResponse({'status': 'error'}, status=400)
 
 @csrf_exempt
@@ -210,7 +232,7 @@ def api_update_task_status(request):
         except Task.DoesNotExist:
             return JsonResponse({'status': 'error', 'msg': 'Task not found'}, status=404)
         
-        
+
 @login_required(login_url='login')
 def api_get_note_content(request):
     """

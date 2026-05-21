@@ -14,20 +14,17 @@
       </header>
 
       <ul class="flex flex-col gap-3">
+        {% for file in context_files %}
         <li class="glass-card rounded-lg p-3 flex items-center gap-3">
           <span class="text-xl">📄</span>
           <div class="flex flex-col">
-            <span class="font-medium text-[var(--text-primary)] text-sm">Neural Networks.md</span>
+            <span class="font-medium text-[var(--text-primary)] text-sm truncate w-48">{{ file }}.md</span>
             <span class="text-xs opacity-60 uppercase tracking-wide">note</span>
           </div>
         </li>
-        <li class="glass-card rounded-lg p-3 flex items-center gap-3">
-          <span class="text-xl">📄</span>
-          <div class="flex flex-col">
-            <span class="font-medium text-[var(--text-primary)] text-sm">Transformers.pdf</span>
-            <span class="text-xs opacity-60 uppercase tracking-wide">pdf</span>
-          </div>
-        </li>
+        {% empty %}
+        <li class="text-sm opacity-50 italic">No documents synced.</li>
+        {% endfor %}
       </ul>
 
       <button type="button" class="btn-primary w-full py-2 rounded-lg text-sm font-bold border border-dashed">+ Add Documents</button>
@@ -46,14 +43,36 @@
       </header>
 
       <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6 chat-feed" id="chat-feed">
-        <article class="flex gap-4 ai-message">
-          <div class="text-2xl mt-1">✨</div>
-          <div class="glass-card rounded-2xl rounded-tl-none p-4 max-w-[85%] border-[var(--active-accent)] shadow-[var(--glow-active)]">
-            <p class="text-[var(--text-primary)] leading-relaxed">
-              Hello! I'm your AI assistant running on <strong class="text-[var(--active-accent)]">{{ config.ai_model }}</strong>. I've analyzed your selected documents. What would you like to know?
-            </p>
-          </div>
-        </article>
+        
+        {% if not chat_history %}
+            <article class="flex gap-4 ai-message">
+              <div class="text-2xl mt-1">✨</div>
+              <div class="glass-card rounded-2xl rounded-tl-none p-4 max-w-[85%] border-[var(--active-accent)] shadow-[var(--glow-active)]">
+                <p class="text-[var(--text-primary)] leading-relaxed">
+                  Hello! I'm your AI assistant running on <strong class="text-[var(--active-accent)]">{{ config.ai_model }}</strong>. I've analyzed your selected documents. What would you like to know?
+                </p>
+              </div>
+            </article>
+        {% endif %}
+
+        {% for msg in chat_history %}
+            {% if msg.role == 'ai' %}
+                <article class="flex gap-4 self-start w-full">
+                  <div class="text-2xl mt-1">✨</div>
+                  <div class="glass-card rounded-2xl rounded-tl-none p-4 max-w-[85%] border-[var(--active-accent)] shadow-[var(--glow-active)]">
+                    <p class="text-[var(--text-primary)] leading-relaxed">{{ msg.content|linebreaksbr }}</p>
+                  </div>
+                </article>
+            {% else %}
+                <article class="flex gap-4 self-end flex-row-reverse w-full">
+                  <div class="text-2xl mt-1">👤</div>
+                  <div class="glass-card rounded-2xl rounded-tr-none p-4 max-w-[85%] bg-[var(--active-accent)] bg-opacity-10 border border-[var(--active-accent)]">
+                    <p class="text-[var(--text-primary)] leading-relaxed">{{ msg.content|linebreaksbr }}</p>
+                  </div>
+                </article>
+            {% endif %}
+        {% endfor %}
+
       </div>
 
       <div class="p-4 border-t border-[var(--border-glass)] bg-[var(--bg-sidebar)]">
