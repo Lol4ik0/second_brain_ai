@@ -90,7 +90,7 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-##⚡ Running the Application
+## ⚡ Running the Application
 Because this project uses a modern frontend build system alongside Django, you need to run two separate terminal windows during development.
 
 **Terminal 1: Start the Django Backend**
