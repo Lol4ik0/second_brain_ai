@@ -12,7 +12,7 @@
         </div>
         <div class="w-full md:w-96 relative">
             <span class="absolute left-3 top-2.5 opacity-50">🔍</span>
-            <input type="search" placeholder="Search notes, tasks, or ask AI..." class="input-field rounded-full pl-10 pr-4 py-2 w-full" />
+            <input type="search" id="global-search-input" placeholder="Search notes, tasks, or ask AI..." class="input-field rounded-full pl-10 pr-4 py-2 w-full" />
         </div>
     </header>
 
@@ -37,26 +37,32 @@
         <article class="glass-card rounded-xl p-6">
             <h3 class="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border-glass)] pb-2">Recent Notes</h3>
             <ul class="flex flex-col gap-4">
+                {% for note in recent_notes %}
                 <li>
-                    <p class="font-semibold text-[var(--text-primary)]">AI Development Roadmap</p>
-                    <span class="text-xs text-[var(--active-accent)]">2 hours ago</span>
+                    <p class="font-semibold text-[var(--text-primary)] truncate" title="{{ note.name }}">{{ note.name }}</p>
+                    <span class="text-xs text-[var(--active-accent)] opacity-80">{{ note.modified_at|timesince }} ago</span>
                 </li>
-                <li>
-                    <p class="font-semibold text-[var(--text-primary)]">Research: Neural Networks</p>
-                    <span class="text-xs text-[var(--active-accent)]">1 day ago</span>
-                </li>
+                {% empty %}
+                <li class="text-sm opacity-70 italic">No notes found in matrix vault.</li>
+                {% endfor %}
             </ul>
         </article>
 
-        <article class="glass-card rounded-xl p-6 border-[var(--active-accent)] shadow-[var(--glow-active)]">
+        <article class="glass-card rounded-xl p-6 border-[var(--active-accent)] shadow-[var(--glow-active)] flex flex-col">
             <h3 class="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border-glass)] pb-2 flex items-center gap-2">
-                <span>✨</span> AI Summary
+                <span>✨</span> AI Analytics
             </h3>
-            <p class="mb-2 leading-relaxed">You have <strong class="text-[var(--text-primary)]">{{ todo_tasks|length }} pending tasks</strong> and <strong class="text-[var(--text-primary)]">12 notes</strong> modified this week.</p>
-            <p class="mb-6 leading-relaxed">Top focus area: <strong class="text-[var(--active-accent)]">AI Development</strong></p>
-            <button type="button" class="btn-primary w-full py-2 rounded-lg text-sm uppercase tracking-wide font-bold">Generate Full Report</button>
+            <p class="mb-2 text-sm leading-relaxed">System holds <strong class="text-[var(--text-primary)]">{{ todo_tasks|length }} pending tasks</strong> and <strong class="text-[var(--text-primary)]">{{ total_notes_count }} core notes</strong>.</p>
+            <p class="mb-4 text-sm leading-relaxed">Computed focus area: <strong class="text-[var(--active-accent)] uppercase tracking-wide">{{ top_focus }}</strong></p>
+            
+            <div class="mt-auto">
+                <div id="ai-report-output" class="hidden mb-3 text-xs bg-[var(--bg-base)] bg-opacity-60 border border-[var(--border-glass)] p-3 rounded-lg text-gray-300 leading-relaxed max-h-32 overflow-y-auto"></div>
+                
+                <button type="button" id="generate-report-btn" class="btn-primary w-full py-2 rounded-lg text-xs uppercase tracking-wide font-bold">Generate Status Report</button>
+            </div>
         </article>
     </div>
+    
 
     <section>
         <h3 class="text-xl font-bold text-[var(--text-primary)] mb-6">Project Board</h3>
@@ -133,4 +139,5 @@
 </main>
 
 <script src="{% static 'js/tasks.js' %}"></script>
+<script src="{% static 'js/home.js' %}"></script> 
 {% endblock %}

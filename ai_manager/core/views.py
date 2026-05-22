@@ -9,6 +9,9 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from datetime import datetime
+from django.utils.timezone import make_aware
+from collections import Counter
 from django.contrib.auth.models import User
 from .models import UserSettings, Task, ChatMessage
 from . import rag_engine
@@ -72,15 +75,64 @@ def logout_view(request):
 # --- PROTECTED APP PAGES ---
 @login_required(login_url='login')
 def home_view(request):
-    # Fetch tasks for Kanban board
+    """
+    Renders the Global Dashboard.
+    Injects dynamic analytics, recent task metrics, and file modification tracking.
+    """
+    from .rag_engine import get_user_paths
+    
+    # 1. Fetch Task Metrics
     tasks = Task.objects.filter(user=request.user)
+    
+    # 2. Compute Top Focus (Based on most frequent active task tags)
+    top_focus = "General Systems"
+    active_tags = tasks.exclude(status='done').exclude(tags__exact='').values_list('tags', flat=True)
+    if active_tags:
+        # Split comma-separated tags across all active tasks
+        all_tags = [tag.strip() for tags_str in active_tags for tag in tags_str.split(',')]
+        if all_tags:
+            # Find the most common tag using Python's Counter
+            top_focus = Counter(all_tags).most_common(1)[0][0]
+
+    # 3. File System Analytics (Recent Notes)
+    paths = get_user_paths(request.user)
+    recent_notes = []
+    
+    if os.path.exists(paths["notes_dir"]):
+        for root, dirs, files in os.walk(paths["notes_dir"]):
+            for file in files:
+                if file.endswith(".md"):
+                    file_path = os.path.join(root, file)
+                    # Extract last modification timestamp
+                    mtime = os.path.getmtime(file_path)
+                    # Convert to Django-friendly timezone-aware datetime
+                    dt_mtime = make_aware(datetime.fromtimestamp(mtime))
+                    
+                    recent_notes.append({
+                        'name': file.replace('.md', ''),
+                        'modified_at': dt_mtime
+                    })
+                    
+    # Sort files by modification date (newest first)
+    recent_notes.sort(key=lambda x: x['modified_at'], reverse=True)
+    
+    # Extract only the top 3 most recently edited files for the UI
+    top_recent_notes = recent_notes[:3]
+
     context = {
         'active_page': 'home', 
         'config': get_user_config(request.user),
+        
+        # Task variables
         'todo_tasks': tasks.filter(status='todo'),
         'progress_tasks': tasks.filter(status='in_progress'),
         'done_tasks': tasks.filter(status='done'),
-        'recent_tasks': tasks.order_by('-created_at')[:4]
+        'recent_tasks': tasks.order_by('-created_at')[:4],
+        
+        # Note and Analytics variables
+        'recent_notes': top_recent_notes,
+        'total_notes_count': len(recent_notes),
+        'top_focus': top_focus
     }
     return render(request, 'home.html', context)
 

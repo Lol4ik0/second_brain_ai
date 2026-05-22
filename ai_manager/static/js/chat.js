@@ -3,15 +3,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('chat-input');
     const chatFeed = document.getElementById('chat-feed');
 
-    if (!form) return;
-
     if (chatFeed) {
         chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
+    if (!form) return;
+
+    const pendingQuery = sessionStorage.getItem('pending_ai_query');
+    if (pendingQuery && input) {
+        // Clear memory to prevent endless loops on reload
+        sessionStorage.removeItem('pending_ai_query');
+
+        // Inject string and artificially trigger form submission
+        input.value = pendingQuery;
+
+        // Use a slight timeout for visual smoothness (simulating typing)
+        setTimeout(() => {
+            form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }, 300);
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const message = input.value.trim();
         if (!message) return;
 
@@ -31,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             updateMessage(loadingId, data.reply || data.message);
-            
+
         } catch (error) {
             updateMessage(loadingId, '❌ Connection to local AI core failed.');
             console.error(error);
@@ -42,11 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         const isAI = sender === 'ai';
         const avatar = isAI ? '✨' : '👤';
-        
+
         // Use Tailwind / Glassmorphism logic based on sender
         const alignmentClass = isAI ? 'self-start' : 'self-end flex-row-reverse';
-        const bubbleStyle = isAI 
-            ? 'rounded-tl-none border-[var(--active-accent)] shadow-[var(--glow-active)]' 
+        const bubbleStyle = isAI
+            ? 'rounded-tl-none border-[var(--active-accent)] shadow-[var(--glow-active)]'
             : 'rounded-tr-none bg-[var(--active-accent)] bg-opacity-10 border border-[var(--active-accent)]';
 
         const html = `
@@ -57,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </article>
         `;
-        
+
         chatFeed.insertAdjacentHTML('beforeend', html);
         chatFeed.scrollTop = chatFeed.scrollHeight;
         return id;
@@ -69,20 +83,20 @@ document.addEventListener('DOMContentLoaded', () => {
             msgEl.querySelector('p').innerHTML = text.replace(/\n/g, '<br>');
         }
     }
-    
+
     // Auto-resize textarea and submit on Enter
     if (input) {
-        input.addEventListener('keydown', function(e) {
+        input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 form.requestSubmit();
             }
         });
 
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
-            if(this.value === '') this.style.height = '60px'; // Reset to min-height
+            if (this.value === '') this.style.height = '60px'; // Reset to min-height
         });
     }
 });
