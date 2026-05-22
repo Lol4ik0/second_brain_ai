@@ -16,3 +16,9 @@ __pycache__/
 # Данные RAG-системы
 obsidian_data/
 chroma_db/
+
+# Фронтенд зависимости (Node.js)
+node_modules/
+
+# (Опционально) Игнорируем логи npm, если они вдруг появятся
+npm-debug.log*

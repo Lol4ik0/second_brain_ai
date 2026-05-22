@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@source "../../templates";
+@source "../../core/templates";
+@source "../js";
+
+
+/* ==========================================================================
+   1. GLOBAL VARIABLES & THEMES
+   ========================================================================== */
+:root {
+    /* Default Cyberpunk Dark */
+    --bg-base: #0D0D12;
+    --bg-sidebar: rgba(13, 13, 18, 0.85);
+    --bg-glass: rgba(20, 20, 30, 0.4);
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0A0B0;
+    
+    --neon-cyan: #00F0FF;
+    --neon-purple: #B026FF;
+    --neon-green: #00FF41;
+    --neon-red: #FF2A5F;
+
+    --border-glass: rgba(255, 255, 255, 0.08);
+    
+    /* Default Accent */
+    --active-accent: var(--neon-cyan);
+    --glow-active: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] {
+    --bg-base: #F8FAFC;
+    --bg-sidebar: #FFFFFF;
+    --bg-glass: rgba(255, 255, 255, 0.8);
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --border-glass: rgba(0, 0, 0, 0.1);
+}
+
+/* Accent Color Overrides */
+[data-accent="purple"] {
+    --active-accent: var(--neon-purple);
+    --glow-active: 0 0 15px rgba(176, 38, 255, 0.3);
+}
+[data-accent="green"] {
+    --active-accent: var(--neon-green);
+    --glow-active: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+[data-accent="cyan"] {
+    --active-accent: var(--neon-cyan);
+    --glow-active: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+/* ==========================================================================
+   2. CUSTOM COMPONENTS (Used alongside Tailwind)
+   ========================================================================== */
+.glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .glass-card {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+}
+
+.input-field {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    transition: 0.3s ease;
+}
+
+[data-theme="light"] .input-field {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.input-field:focus {
+    border-color: var(--active-accent);
+    box-shadow: var(--glow-active);
+    outline: none;
+}
+
+.btn-primary {
+    background: transparent;
+    border: 1px solid var(--active-accent);
+    color: var(--active-accent);
+    transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--active-accent);
+    color: #000;
+    box-shadow: var(--glow-active);
+}
+
+/* Custom Checkbox / Radio styling */
+input[type="radio"], input[type="checkbox"] {
+    accent-color: var(--active-accent);
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}

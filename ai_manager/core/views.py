@@ -192,13 +192,7 @@ def notes_view(request):
         'user_notes': synced_notes
     }
     return render(request, 'notes.html', context)
-                    
-    context = {
-        'active_page': 'notes', 
-        'config': get_user_config(request.user),
-        'user_notes': synced_notes[:15]
-    }
-    return render(request, 'notes.html', context)
+
 
 @login_required(login_url='login')
 def tasks_view(request):
