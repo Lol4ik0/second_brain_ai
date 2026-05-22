@@ -22,3 +22,5 @@ node_modules/
 
 # (Опционально) Игнорируем логи npm, если они вдруг появятся
 npm-debug.log*
+
+node_modules/
