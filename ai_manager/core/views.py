@@ -478,3 +478,23 @@ def api_admin_delete_row(request):
             return JsonResponse({'status': 'error', 'msg': str(e)}, status=500)
             
     return JsonResponse({'status': 'error'}, status=400)
+
+
+@login_required(login_url='login')
+def api_sidebar_stats(request):
+    """
+    Calculates global task completion metrics for the sidebar dynamic progress bar.
+    """
+    total_tasks = Task.objects.filter(user=request.user).count()
+    done_tasks = Task.objects.filter(user=request.user, status='done').count()
+    
+    percent = 0
+    if total_tasks > 0:
+        percent = int((done_tasks / total_tasks) * 100)
+        
+    return JsonResponse({
+        'status': 'ok',
+        'percent': percent,
+        'done': done_tasks,
+        'total': total_tasks
+    })

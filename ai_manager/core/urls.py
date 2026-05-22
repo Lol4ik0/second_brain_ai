@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/send-message/', views.api_chat_message, name='api_send_message'),
     path('api/save-settings/', views.api_save_settings, name='api_save_settings'),
     path('api/get-note/', views.api_get_note_content, name='api_get_note'),
+    path('api/sidebar-stats/', views.api_sidebar_stats, name='api_sidebar_stats'),
     
     # NEW TASK APIs
     path('api/add-task/', views.api_add_task, name='api_add_task'),
