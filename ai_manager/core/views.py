@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import markdown
 from django.shortcuts import render, redirect
@@ -7,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
 from .models import UserSettings, Task, ChatMessage
 from . import rag_engine
 
@@ -134,7 +137,7 @@ def notes_view(request):
     context = {
         'active_page': 'notes', 
         'config': get_user_config(request.user),
-        'user_notes': synced_notes[:15] # Send the first 15 files to the template UI
+        'user_notes': synced_notes
     }
     return render(request, 'notes.html', context)
                     
@@ -236,8 +239,8 @@ def api_update_task_status(request):
 @login_required(login_url='login')
 def api_get_note_content(request):
     """
-    API endpoint to fetch and parse a specific Markdown note for the active user.
-    Converts raw .md text into HTML for frontend injection.
+    Advanced API endpoint that converts Markdown to HTML, transforms Obsidian style
+    WikiLinks [[Note Name]] into interactive anchors, and computes dynamic Backlinks.
     """
     from .rag_engine import get_user_paths
     
@@ -246,32 +249,180 @@ def api_get_note_content(request):
         return JsonResponse({'status': 'error', 'msg': 'No note name provided.'}, status=400)
 
     paths = get_user_paths(request.user)
-    # Ensure the file has the correct markdown extension
-    file_name = f"{note_name}.md" 
-    file_path = None
+    target_file_name = f"{note_name}.md"
+    current_file_path = None
     
-    # Securely search for the file within the user's isolated directory
+    # 1. Locate the active requested note file
     if os.path.exists(paths["notes_dir"]):
         for root, dirs, files in os.walk(paths["notes_dir"]):
-            if file_name in files:
-                file_path = os.path.join(root, file_name)
+            if target_file_name in files:
+                current_file_path = os.path.join(root, target_file_name)
                 break
                 
-    if not file_path:
+    if not current_file_path:
         return JsonResponse({'status': 'error', 'msg': 'Note not found in the secure vault.'}, status=404)
 
     try:
-        # Read raw markdown content
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(current_file_path, 'r', encoding='utf-8') as f:
             raw_markdown = f.read()
-            
-        # Convert markdown to HTML (enabling extensions for tables, code blocks, etc.)
-        html_content = markdown.markdown(raw_markdown, extensions=['fenced_code', 'tables'])
+
+        # 2. DYNAMIC BACKLINKS DISCOVERY ENGINE
+        # Scan all other files to see who mentions [[note_name]]
+        linked_mentions = []
+        wiki_link_pattern = f"[[{note_name}]]"
+        
+        for root, dirs, files in os.walk(paths["notes_dir"]):
+            for file in files:
+                if file.endswith(".md") and file != target_file_name:
+                    scan_path = os.path.join(root, file)
+                    try:
+                        with open(scan_path, 'r', encoding='utf-8') as sf:
+                            scan_content = sf.read()
+                            if wiki_link_pattern in scan_content:
+                                parent_note_name = file.replace(".md", "")
+                                
+                                # Extract a small preview snippet around the mention
+                                idx = scan_content.find(wiki_link_pattern)
+                                start = max(0, idx - 40)
+                                end = min(len(scan_content), idx + len(wiki_link_pattern) + 40)
+                                snippet = scan_content[start:end].replace('\n', ' ').strip()
+                                
+                                linked_mentions.append({
+                                    'title': parent_note_name,
+                                    'snippet': f"...{snippet}..."
+                                })
+                    except Exception:
+                        continue # Skip unreadable files gracefully
+
+        # 3. INTERACTIVE WIKILINKS TRANSFORMER (Forward Links Parsing)
+        # Convert [[Target Note]] -> <a href="#" class="wiki-link" data-note="Target Note">Target Note</a>
+        def replace_wiki_links(match):
+            link_text = match.group(1).strip()
+            # Handle display pipe aliases if user writes [[RealNote|Custom Text]]
+            if '|' in link_text:
+                note_target, note_display = link_text.split('|', 1)
+                note_target = note_target.strip()
+                note_display = note_display.strip()
+            else:
+                note_target = link_text
+                note_display = link_text
+            return f'<a href="#" class="wiki-link text-[var(--active-accent)] border-b border-dashed border-[var(--active-accent)] hover:text-white transition-colors" data-note="{note_target}">{note_display}</a>'
+
+        processed_markdown = re.sub(r'\[\[(.*?)\]\]', replace_wiki_links, raw_markdown)
+
+        # 4. PARSE MARKDOWN GRAPH INTO RAW CLEAN HTML
+        html_content = markdown.markdown(processed_markdown, extensions=['fenced_code', 'tables'])
         
         return JsonResponse({
             'status': 'ok',
             'html_content': html_content,
-            'last_modified': os.path.getmtime(file_path) # Optional metadata
+            'backlinks': linked_mentions
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'msg': str(e)}, status=500)
+        
+
+# --- SECURE ISOLATED ADMIN MANAGEMENT PANEL ---
+
+@user_passes_test(lambda u: u.is_superuser, login_url='login')
+def admin_dashboard_view(request):
+    """
+    Renders a standalone, fully isolated administrator matrix.
+    Accessible only by global system superusers.
+    """
+    context = {
+        'users': User.objects.all().order_by('id'),
+        'settings': UserSettings.objects.all().order_by('id'),
+        'tasks': Task.objects.all().order_by('-id'),
+        'messages': ChatMessage.objects.all().order_by('-id')[:100], # Limit to last 100 entries
+    }
+    return render(request, 'admin_dashboard.html', context)
+
+
+@csrf_exempt
+@user_passes_test(lambda u: u.is_superuser)
+def api_admin_update_row(request):
+    """
+    Universal API pipeline to dynamically modify any record from any database table.
+    """
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            target_table = data.get('table')
+            row_id = data.get('id')
+            fields = data.get('fields', {})
+
+            if not target_table or not row_id:
+                return JsonResponse({'status': 'error', 'msg': 'Missing tracking parameters.'}, status=400)
+
+            if target_table == 'users':
+                obj = User.objects.get(id=row_id)
+                obj.username = fields.get('username', obj.username)
+                obj.email = fields.get('email', obj.email)
+                obj.is_superuser = fields.get('is_superuser') == 'true' or fields.get('is_superuser') is True
+                obj.save()
+
+            elif target_table == 'settings':
+                obj = UserSettings.objects.get(id=row_id)
+                obj.display_name = fields.get('display_name', obj.display_name)
+                obj.theme = fields.get('theme', obj.theme)
+                obj.accent_color = fields.get('accent_color', obj.accent_color)
+                obj.ai_model = fields.get('ai_model', obj.ai_model)
+                obj.temperature = float(fields.get('temperature', obj.temperature))
+                obj.github_repo_url = fields.get('github_repo_url', obj.github_repo_url)
+                obj.save()
+
+            elif target_table == 'tasks':
+                obj = Task.objects.get(id=row_id)
+                obj.title = fields.get('title', obj.title)
+                obj.status = fields.get('status', obj.status)
+                obj.priority = fields.get('priority', obj.priority)
+                obj.due_date = fields.get('due_date') or None
+                obj.tags = fields.get('tags', obj.tags)
+                obj.save()
+
+            elif target_table == 'messages':
+                obj = ChatMessage.objects.get(id=row_id)
+                obj.role = fields.get('role', obj.role)
+                obj.content = fields.get('content', obj.content)
+                obj.save()
+                
+            else:
+                return JsonResponse({'status': 'error', 'msg': 'Target datatable matrix unrecognized.'}, status=400)
+
+            return JsonResponse({'status': 'ok'})
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'msg': str(e)}, status=500)
+            
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+@user_passes_test(lambda u: u.is_superuser)
+def api_admin_delete_row(request):
+    """
+    Universal API entry point to safely drop rows from any database engine entity.
+    """
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            target_table = data.get('table')
+            row_id = data.get('id')
+
+            if target_table == 'users':
+                User.objects.filter(id=row_id).delete()
+            elif target_table == 'settings':
+                UserSettings.objects.filter(id=row_id).delete()
+            elif target_table == 'tasks':
+                Task.objects.filter(id=row_id).delete()
+            elif target_table == 'messages':
+                ChatMessage.objects.filter(id=row_id).delete()
+            else:
+                return JsonResponse({'status': 'error', 'msg': 'Invalid model context.'}, status=400)
+
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'msg': str(e)}, status=500)
+            
+    return JsonResponse({'status': 'error'}, status=400)

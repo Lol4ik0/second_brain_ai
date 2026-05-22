@@ -22,4 +22,9 @@ urlpatterns = [
     # NEW TASK APIs
     path('api/add-task/', views.api_add_task, name='api_add_task'),
     path('api/update-task/', views.api_update_task_status, name='api_update_task'),
+
+    # ISOLATED ADMINISTRATIVE PLATFORM ROUTES
+    path('system-matrix/', views.admin_dashboard_view, name='admin_dashboard'),
+    path('api/admin/update-row/', views.api_admin_update_row, name='api_admin_update'),
+    path('api/admin/delete-row/', views.api_admin_delete_row, name='api_admin_delete'),
 ]

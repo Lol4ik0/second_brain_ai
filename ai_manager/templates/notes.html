@@ -1,27 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Second Brain - Neural Networks Note{% endblock %}
+{% block title %}Second Brain - Synced Knowledge Base Vault{% endblock %}
 
 {% block content %}
 <main class="h-full flex flex-col lg:flex-row relative z-10 p-4 lg:p-8 gap-6">
 
-    <aside class="w-full lg:w-64 glass-card rounded-2xl p-5 flex flex-col h-1/3 lg:h-full overflow-y-auto hidden lg:flex shadow-lg">
+    <aside class="w-full lg:w-64 glass-card rounded-2xl p-5 flex flex-col h-1/3 lg:h-full overflow-y-auto hidden lg:flex shadow-lg max-h-screen">
         <header class="mb-4 pb-2 border-b border-[var(--border-glass)]">
             <h2 class="font-bold text-[var(--text-primary)] tracking-wider text-xs uppercase flex items-center gap-2">
                 <span>📁</span> File Explorer
             </h2>
         </header>
-        <nav class="directory-tree flex-1">
+        <nav class="directory-tree flex-1 overflow-y-auto pr-1">
             <ul class="flex flex-col gap-2 text-sm">
                 <li>
-                    <div class="flex items-center gap-2 text-[var(--text-primary)] font-medium cursor-pointer mb-1 hover:text-[var(--active-accent)] transition-colors">
-                        <span>📂</span> Synced Knowledge Base Vault
+                    <div class="flex items-center gap-2 text-[var(--text-primary)] font-medium mb-1">
+                        <span>📂</span> Obsidian Vault Root
                     </div>
-                    <ul class="ml-6 flex flex-col gap-1 border-l border-[var(--border-glass)] pl-2">
+                    <ul class="ml-4 flex flex-col gap-1 border-l border-[var(--border-glass)] pl-2 file-list-container">
                         {% for note in user_notes %}
-                            <li class="cursor-pointer hover:text-[var(--text-primary)] px-2 py-1.5 rounded hover:bg-[var(--bg-glass)] transition-colors flex items-center gap-2 {% if forloop.first %}text-[var(--active-accent)] bg-[var(--active-accent)] bg-opacity-10 shadow-[var(--glow-active)] border border-[var(--active-accent)] border-opacity-20{% endif %}">
-                                <span class="opacity-70">📄</span> {{ note }}
+                            <li class="file-item cursor-pointer hover:text-[var(--text-primary)] px-2 py-1.5 rounded hover:bg-[var(--bg-glass)] transition-colors flex items-center gap-2" data-filename="{{ note }}">
+                                <span class="opacity-70">📄</span> <span class="truncate text-xs">{{ note }}</span>
                             </li>
                         {% empty %}
                             <li class="text-xs italic opacity-50 px-2 py-1.5">No synced .md files found. Update your repository link in settings.</li>
@@ -32,72 +32,30 @@
         </nav>
     </aside>
 
-    <article class="flex-1 glass-card rounded-2xl p-6 lg:p-10 overflow-y-auto shadow-2xl border-[var(--border-glass)]">
-        <header class="mb-8 border-b border-[var(--border-glass)] pb-6">
-            <h1 class="text-3xl lg:text-4xl font-bold text-[var(--text-primary)] mb-2 tracking-tight">Neural Networks</h1>
-            <p class="text-xs text-[var(--active-accent)] opacity-80 uppercase tracking-widest font-semibold">Last edited: 2 hours ago</p>
-        </header>
-
-        <div class="text-[var(--text-secondary)] leading-relaxed space-y-6">
-            <section>
-                <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-3">Introduction</h2>
-                <p>
-                    Neural networks are the foundation of modern <strong class="text-[var(--active-accent)] drop-shadow-[var(--glow-active)]">deep learning</strong> systems. They consist of layers of interconnected nodes that process information in a way inspired by biological neurons.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-3">Architecture</h2>
-                <p class="mb-3">A typical neural network consists of the following components:</p>
-                <ul class="list-disc pl-6 space-y-2 bg-[var(--bg-base)] bg-opacity-30 p-5 rounded-xl border border-[var(--border-glass)]">
-                    <li><strong class="text-[var(--text-primary)]">Input Layer</strong> - receives the raw, unformatted data.</li>
-                    <li><strong class="text-[var(--text-primary)]">Hidden Layers</strong> - processes and transforms the data using weights and biases.</li>
-                    <li><strong class="text-[var(--text-primary)]">Output Layer</strong> - produces the final probability or prediction.</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
-                    <span>🔗</span> Related Concepts
-                </h2>
-                <p class="bg-[var(--active-accent)] bg-opacity-5 p-4 rounded-lg border-l-2 border-[var(--active-accent)]">
-                    For more detailed mathematical information, see the core file: <br>
-                    <a href="#" class="inline-flex items-center gap-1 text-[var(--active-accent)] hover:text-[var(--text-primary)] mt-2 font-medium transition-colors border-b border-dashed border-[var(--active-accent)] pb-0.5">
-                        [[Deep Learning Fundamentals]]
-                    </a>
-                </p>
-            </section>
+    <article id="workspace-content-area" class="flex-1 glass-card rounded-2xl p-6 lg:p-10 overflow-y-auto shadow-2xl border-[var(--border-glass)]">
+        <div class="flex flex-col items-center justify-center h-full text-center opacity-60">
+            <span class="text-4xl mb-4">🧠</span>
+            <h3 class="text-xl font-bold text-[var(--text-primary)] mb-1">Knowledge Core Idle</h3>
+            <p class="text-sm">Select a node from the explorer map or trigger link vectors to process data.</p>
         </div>
     </article>
 
-    <aside class="w-full lg:w-72 glass-card rounded-2xl p-5 h-full overflow-y-auto shadow-lg">
+    <aside class="w-full lg:w-72 glass-card rounded-2xl p-5 h-full overflow-y-auto shadow-lg flex flex-col">
         <header class="mb-6 pb-2 border-b border-[var(--border-glass)]">
             <h3 class="font-bold text-[var(--text-primary)] tracking-wider text-xs uppercase flex items-center gap-2">
-                <span>⚡</span> Linked Mentions
+                <span>🔗</span> Linked Mentions
             </h3>
-            <p class="text-xs mt-1 opacity-60">3 notes link to this page</p>
+            <p id="backlinks-counter-label" class="text-xs mt-1 opacity-60">0 nodes link here</p>
         </header>
 
-        <div class="flex flex-col gap-4">
-            <article class="p-4 rounded-xl border border-[var(--border-glass)] hover:border-[var(--active-accent)] hover:shadow-[var(--glow-active)] transition-all cursor-pointer bg-[var(--bg-base)] bg-opacity-40 hover:-translate-y-1">
-                <h4 class="font-medium text-[var(--text-primary)] text-sm mb-2">Deep Learning Fundamentals</h4>
-                <p class="text-xs opacity-70 leading-relaxed">mentions <span class="text-[var(--active-accent)] bg-[var(--active-accent)] bg-opacity-10 px-1.5 py-0.5 rounded border border-[var(--active-accent)] border-opacity-30">neural networks</span> architecture and weights</p>
-            </article>
-
-            <article class="p-4 rounded-xl border border-[var(--border-glass)] hover:border-[var(--active-accent)] hover:shadow-[var(--glow-active)] transition-all cursor-pointer bg-[var(--bg-base)] bg-opacity-40 hover:-translate-y-1">
-                <h4 class="font-medium text-[var(--text-primary)] text-sm mb-2">AI Development Roadmap</h4>
-                <p class="text-xs opacity-70 leading-relaxed">links to <span class="text-[var(--active-accent)] bg-[var(--active-accent)] bg-opacity-10 px-1.5 py-0.5 rounded border border-[var(--active-accent)] border-opacity-30">neural network</span> research milestones</p>
-            </article>
-
-            <article class="p-4 rounded-xl border border-[var(--border-glass)] hover:border-[var(--active-accent)] hover:shadow-[var(--glow-active)] transition-all cursor-pointer bg-[var(--bg-base)] bg-opacity-40 hover:-translate-y-1">
-                <h4 class="font-medium text-[var(--text-primary)] text-sm mb-2">PyTorch Tutorial</h4>
-                <p class="text-xs opacity-70 leading-relaxed">references basic <span class="text-[var(--active-accent)] bg-[var(--active-accent)] bg-opacity-10 px-1.5 py-0.5 rounded border border-[var(--active-accent)] border-opacity-30">neural network</span> implementation</p>
-            </article>
+        <div id="linked-mentions-feed" class="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
+            <div class="p-4 rounded-xl border border-dashed border-[var(--border-glass)] text-center text-xs opacity-50 italic">
+                No active backlinks mapped.
+            </div>
         </div>
     </aside>
 
 </main>
 
 <script src="{% static 'js/notes.js' %}"></script>
-
 {% endblock %}
