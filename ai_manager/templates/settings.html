@@ -84,9 +84,9 @@
           <div class="flex flex-col gap-2">
             <label class="text-sm font-medium">Language Model</label>
             <select id="ai-model" class="input-field rounded-lg px-4 py-2 w-full md:w-1/2">
-                <option value="llama3" {% if config.ai_model == 'llama3' %}selected{% endif %}>Llama 3 (Ollama)</option>
-                <option value="phi3" {% if config.ai_model == 'phi3' %}selected{% endif %}>Phi 3 (Ollama)</option>
-            </select>
+                <option value="llama3" {% if config.ai_model == 'llama3' %}selected{% endif %}>Llama 3 (Ollama Local)</option>
+                <option value="phi3" {% if config.ai_model == 'phi3' %}selected{% endif %}>Phi 3 (Ollama Local)</option>
+                <option value="gemini" {% if config.ai_model == 'gemini' %}selected{% endif %}>Gemini 1.5 Pro (Google Cloud)</option> </select>
           </div>
 
           <div class="flex flex-col gap-2 w-full md:w-1/2">

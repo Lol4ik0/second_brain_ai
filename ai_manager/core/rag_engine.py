@@ -49,8 +49,25 @@ def ask_second_brain(user_query, user):
             sync_success = sync_obsidian_repo(settings.github_repo_url, settings.github_token, paths["notes_dir"])
             
             # Load global LLM parameters
-            Settings.llm = Ollama(model=settings.ai_model, temperature=settings.temperature, request_timeout=600.0)
-            Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
+            # --- DYNAMIC AI ENGINE ROUTER BASED ON USER SETTINGS ---
+            if settings.ai_model == "gemini":
+                # Lazy import Gemini extensions to preserve local memory if not used
+                from llama_index.llms.gemini import Gemini
+                from llama_index.embeddings.gemini import GeminiEmbedding
+                
+                gemini_key = os.getenv("GEMINI_API_KEY")
+                if not gemini_key:
+                    return "System Status Alert: GEMINI_API_KEY is missing inside your secure server .env matrix."
+                
+                # Configure ultra-fast Google API architecture
+                Settings.llm = Gemini(model="models/gemini-1.5-pro", api_key=gemini_key)
+                Settings.embed_model = GeminiEmbedding(model_name="models/text-embedding-004", api_key=gemini_key)
+                print(f"Connected to Cloud Neural Cluster: Gemini 1.5 Pro for Operator {user.username}")
+            else:
+                # Fallback to local offline Ollama processing clusters
+                Settings.llm = Ollama(model=settings.ai_model, temperature=settings.temperature, request_timeout=600.0)
+                Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
+                print(f"Initialized Local Processing Cluster: {settings.ai_model} via Ollama")
             
             # Connect to ChromaDB client instance
             db = chromadb.PersistentClient(path=DB_DIR)
