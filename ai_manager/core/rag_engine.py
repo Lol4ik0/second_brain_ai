@@ -51,18 +51,25 @@ def ask_second_brain(user_query, user):
             # Load global LLM parameters
             # --- DYNAMIC AI ENGINE ROUTER BASED ON USER SETTINGS ---
             if settings.ai_model == "gemini":
-                # Lazy import Gemini extensions to preserve local memory if not used
-                from llama_index.llms.gemini import Gemini
-                from llama_index.embeddings.gemini import GeminiEmbedding
+                from llama_index.llms.openai_like import OpenAILike
+                from llama_index.embeddings.huggingface import HuggingFaceEmbedding
                 
                 gemini_key = os.getenv("GEMINI_API_KEY")
                 if not gemini_key:
                     return "System Status Alert: GEMINI_API_KEY is missing inside your secure server .env matrix."
                 
-                # Configure ultra-fast Google API architecture
-                Settings.llm = Gemini(model="models/gemini-1.5-pro", api_key=gemini_key)
-                Settings.embed_model = GeminiEmbedding(model_name="models/text-embedding-004", api_key=gemini_key)
-                print(f"Connected to Cloud Neural Cluster: Gemini 1.5 Pro for Operator {user.username}")
+                Settings.llm = OpenAILike(
+                    model="gemini-1.5-pro", 
+                    api_key=gemini_key,
+                    api_base="https://generativelanguage.googleapis.com/v1beta/openai/",
+                    is_chat_model=True
+                )
+                
+                Settings.embed_model = HuggingFaceEmbedding(
+                    model_name="BAAI/bge-small-en-v1.5"
+                )
+                
+                print(f"🤖 Connected to AI Core: Gemini LLM + Local Embeddings for Operator {user.username}")
             else:
                 # Fallback to local offline Ollama processing clusters
                 Settings.llm = Ollama(model=settings.ai_model, temperature=settings.temperature, request_timeout=600.0)
