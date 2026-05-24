@@ -49,31 +49,23 @@ def ask_second_brain(user_query, user):
             sync_success = sync_obsidian_repo(settings.github_repo_url, settings.github_token, paths["notes_dir"])
             
             # Load global LLM parameters
-            # --- DYNAMIC AI ENGINE ROUTER BASED ON USER SETTINGS ---
+            Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
+
             if settings.ai_model == "gemini":
-                from llama_index.llms.openai_like import OpenAILike
-                from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+                from llama_index.llms.google_genai import GoogleGenAI
                 
                 gemini_key = os.getenv("GEMINI_API_KEY")
                 if not gemini_key:
                     return "System Status Alert: GEMINI_API_KEY is missing inside your secure server .env matrix."
                 
-                Settings.llm = OpenAILike(
+                Settings.llm = GoogleGenAI(
                     model="gemini-1.5-pro", 
-                    api_key=gemini_key,
-                    api_base="https://generativelanguage.googleapis.com/v1beta/openai/",
-                    is_chat_model=True
+                    api_key=gemini_key
                 )
+                print(f"🤖 Connected to AI Core: Gemini (GenAI SDK) + Local Embeddings for Operator {user.username}")
                 
-                Settings.embed_model = HuggingFaceEmbedding(
-                    model_name="BAAI/bge-small-en-v1.5"
-                )
-                
-                print(f"🤖 Connected to AI Core: Gemini LLM + Local Embeddings for Operator {user.username}")
             else:
-                # Fallback to local offline Ollama processing clusters
                 Settings.llm = Ollama(model=settings.ai_model, temperature=settings.temperature, request_timeout=600.0)
-                Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text")
                 print(f"Initialized Local Processing Cluster: {settings.ai_model} via Ollama")
             
             # Connect to ChromaDB client instance
