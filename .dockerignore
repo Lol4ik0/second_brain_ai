@@ -1,0 +1,7 @@
+venv/
+ai_manager/node_modules/
+__pycache__/
+*.pyc
+.git/
+.env
+chroma_data/

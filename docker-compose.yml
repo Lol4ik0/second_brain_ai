@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Сервис 1: Ядро твоего приложения (Django)
+  web:
+    build: .
+    container_name: second_brain_web
+    # Команда запуска сервера (слушает все адреса на порту 8000)
+    command: python ai_manager/manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      # Синхронизируем код: меняешь файл в VS Code -> он сразу меняется в Докере
+      - .:/app
+    environment:
+      # ВАЖНО: Указываем Django, как найти Ollama на твоем компьютере Windows
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - DEBUG=True
+
+  # Сервис 2: Сборщик стилей (Tailwind)
+  tailwind:
+    build: .
+    container_name: second_brain_css
+    # Команда запуска npm run dev в папке ai_manager
+    command: bash -c "cd ai_manager && npm run dev"
+    volumes:
+      - .:/app
