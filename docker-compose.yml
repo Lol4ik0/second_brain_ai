@@ -1,12 +1,25 @@
 version: '3.8'
 
 services:
+  # Сервис 0: База данных PostgreSQL
+  db:
+    image: postgres:16-alpine # Используем легкую alpine-версию 16-й постгри
+    container_name: second_brain_db
+    restart: unless-stopped
+    env_file:
+      - .env # Берем пароли из .env файла
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # КРИТИЧНО: сохраняем данные БД на хосте
+    ports:
+      - "5432:5432" # (Опционально) пробрасываем порт, если захочешь подключаться через DBeaver/DataGrip
+
   # Сервис 1: Ядро твоего приложения (Django)
   web:
     build: .
     container_name: second_brain_web
+    working_dir: /app/ai_manager
     # Команда запуска сервера (слушает все адреса на порту 8000)
-    command: python ai_manager/manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
@@ -16,6 +29,10 @@ services:
       # ВАЖНО: Указываем Django, как найти Ollama на твоем компьютере Windows
       - OLLAMA_HOST=http://host.docker.internal:11434
       - DEBUG=True
+    env_file:
+      - .env
+    depends_on:
+      - db
 
   # Сервис 2: Сборщик стилей (Tailwind)
   tailwind:
@@ -25,3 +42,6 @@ services:
     command: bash -c "cd ai_manager && npm run dev"
     volumes:
       - .:/app
+
+volumes:
+  postgres_data: # Объявляем именованный том для базы данных

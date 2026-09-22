@@ -83,8 +83,12 @@ WSGI_APPLICATION = 'ai_manager.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'second_brain'),
+        'USER': os.environ.get('POSTGRES_USER', 'myuser'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'mypassword'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
