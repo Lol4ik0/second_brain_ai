@@ -73,6 +73,10 @@ def ask_second_brain(user_query, user, selected_files=None):
     settings = user.settings
     paths = get_user_paths(user)
     ai_strategy = settings.ai_strategy or 'auto'
+    try:
+        temp = float(settings.temperature)
+    except (TypeError, ValueError):
+        temp = 0.7
     
     logger.info(f"Обработка запроса: {user_query}")
     
@@ -83,12 +87,15 @@ def ask_second_brain(user_query, user, selected_files=None):
         local_online = is_local_ai_ready()
 
         if ai_strategy == 'local_only' and not local_online:
-            return "System Notification: Strictly Local strategy requires Ollama to be running on the local PC."
+            return "System Error: Local AI is strictly selected but the PC is offline"
 
-        use_local_ai = ai_strategy == 'local_only' or (ai_strategy == 'auto' and local_online)
+        use_local_ai = (
+            ai_strategy == 'local_only'
+            or (ai_strategy == 'auto' and local_online)
+        )
         
         if user.id in _user_chat_engines:
-            if getattr(_user_chat_engines[user.id], '_is_local_engine', False) != local_online:
+            if getattr(_user_chat_engines[user.id], '_is_local_engine', False) != use_local_ai:
                 logger.info("Смена состояния ПК. Сброс кэша LLM.")
                 reset_chat_engine(user.id)
 
@@ -101,13 +108,17 @@ def ask_second_brain(user_query, user, selected_files=None):
                 Settings.llm = Ollama(
                     model="llama3:latest",
                     base_url=LOCAL_OLLAMA_URL,
-                    temperature=settings.temperature, 
+                    temperature=temp,
                     request_timeout=600.0
                 )
             else:
                 logger.info("Текст генерирует Gemini 3.6 Flash.")
                 gemini_key = os.getenv("GEMINI_API_KEY")
-                Settings.llm = GoogleGenAI(model="gemini-3.6-flash", api_key=gemini_key)
+                Settings.llm = GoogleGenAI(
+                    model="gemini-3.6-flash",
+                    api_key=gemini_key,
+                    temperature=temp,
+                )
             
             # Инициализация ChromaDB
             db = chromadb.PersistentClient(path=DB_DIR)

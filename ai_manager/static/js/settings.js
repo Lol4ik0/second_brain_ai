@@ -44,9 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Build Payload
+        const displayName = document.getElementById('display-name')?.value || '';
+        const email = document.getElementById('email-address')?.value || '';
         const config = {
-            display_name: document.getElementById('display-name')?.value || 'Alex Chen',
-            email: document.getElementById('email-address')?.value || 'alex@example.com',
+            username: displayName,
+            display_name: displayName,
+            email,
             theme: document.getElementById('theme-select')?.value || 'cyberpunk',
             accent_color: selectedAccent,
             ai_strategy: document.getElementById('ai-strategy')?.value || 'auto',

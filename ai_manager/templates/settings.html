@@ -21,11 +21,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex flex-col gap-2">
             <label for="display-name" class="text-sm font-medium">Display Name</label>
-            <input type="text" id="display-name" class="input-field rounded-lg px-4 py-2 w-full" value="{{ config.display_name }}" />
+            <input type="text" id="display-name" name="username" class="input-field rounded-lg px-4 py-2 w-full" value="{{ request.user.username }}" />
           </div>
           <div class="flex flex-col gap-2">
             <label for="email-address" class="text-sm font-medium">Email Address</label>
-            <input type="email" id="email-address" class="input-field rounded-lg px-4 py-2 w-full" value="{{ config.email }}">
+            <input type="email" id="email-address" name="email" class="input-field rounded-lg px-4 py-2 w-full" value="{{ request.user.email|default:'' }}">
           </div>
         </div>
       </section>
@@ -83,7 +83,7 @@
         <div class="flex flex-col gap-6 border-t border-[var(--border-glass)] pt-6">
           <div class="flex flex-col gap-2">
             <label for="ai-strategy" class="text-sm font-medium">AI Strategy</label>
-            <select id="ai-strategy" class="input-field rounded-lg px-4 py-2 w-full md:w-1/2 bg-[var(--bg-glass)] backdrop-blur-md border border-[var(--border-glass)] text-[var(--text-primary)] focus:border-[var(--active-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--active-accent)]">
+            <select id="ai-strategy" name="ai_strategy" class="input-field rounded-lg px-4 py-2 w-full md:w-1/2 bg-[var(--bg-glass)] backdrop-blur-md border border-[var(--border-glass)] text-[var(--text-primary)] focus:border-[var(--active-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--active-accent)]">
               <option value="auto" {% if config.ai_strategy == 'auto' or not config.ai_strategy %}selected{% endif %}>Auto-Hybrid (Ollama if local PC is ON, Gemini if OFF)</option>
               <option value="local_only" {% if config.ai_strategy == 'local_only' %}selected{% endif %}>Strictly Local (Ollama Llama3, fail if PC is OFF)</option>
               <option value="cloud_only" {% if config.ai_strategy == 'cloud_only' %}selected{% endif %}>Cloud Only (Gemini 2.5 Flash, fast but requires internet)</option>
@@ -95,7 +95,7 @@
               <span>Creativity Temperature</span>
               <span id="temp-value" class="text-[var(--active-accent)] font-bold">{{ config.temperature }}</span>
             </label>
-            <input type="range" id="ai-temperature" min="0" max="1" step="0.1" value="{{ config.temperature }}" class="w-full cursor-pointer accent-[var(--active-accent)]" />
+            <input type="range" id="ai-temperature" name="temperature" min="0.0" max="1.0" step="0.1" value="{{ config.temperature }}" class="w-full cursor-pointer accent-[var(--active-accent)]" />
           </div>
         </div>
       </section>

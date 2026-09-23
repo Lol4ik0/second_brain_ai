@@ -32,6 +32,13 @@ def api_chat_message(request):
 def api_save_settings(request):
     if request.method == "POST":
         data = json.loads(request.body)
+        username = data.get('username', data.get('display_name', request.user.username))
+        email = data.get('email', request.user.email)
+
+        request.user.username = str(username).strip()
+        request.user.email = str(email).strip()
+        request.user.save()
+
         settings = request.user.settings
         
         settings.display_name = data.get('display_name', settings.display_name)
@@ -40,7 +47,11 @@ def api_save_settings(request):
         ai_strategy = data.get('ai_strategy', settings.ai_strategy)
         if ai_strategy in {'auto', 'local_only', 'cloud_only'}:
             settings.ai_strategy = ai_strategy
-        settings.temperature = float(data.get('temperature', settings.temperature))
+        try:
+            temperature = float(data.get('temperature', settings.temperature))
+        except (TypeError, ValueError):
+            temperature = 0.7
+        settings.temperature = max(0.0, min(1.0, temperature))
         settings.github_repo_url = data.get('github_repo_url', settings.github_repo_url).strip()
         settings.github_token = data.get('github_token', settings.github_token).strip()
         settings.save()
