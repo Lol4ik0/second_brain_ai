@@ -7,20 +7,22 @@
 
 {% block content %}
   <main class="flex-1 min-h-0 overflow-hidden flex flex-col lg:flex-row relative z-10 p-4 lg:p-8 gap-6">
-    <aside class="w-full lg:w-80 flex flex-col gap-6">
+    <aside class="w-full lg:w-80 min-h-0 lg:h-full flex flex-col gap-6">
       <header>
         <h2 class="text-2xl font-bold text-[var(--text-primary)]">Context</h2>
         <p class="text-sm mt-1">Documents being analyzed</p>
       </header>
 
-      <ul class="flex flex-col gap-3">
+      <ul class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
         {% for file in context_files %}
-        <li class="glass-card rounded-lg p-3 flex items-center gap-3">
-          <span class="text-xl">📄</span>
-          <div class="flex flex-col">
-            <span class="font-medium text-[var(--text-primary)] text-sm truncate w-48">{{ file }}.md</span>
-            <span class="text-xs opacity-60 uppercase tracking-wide">note</span>
-          </div>
+        <li>
+          <a href="{% url 'notes' %}?file={{ file|urlencode }}" class="glass-card rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-800 transition-colors">
+            <span class="text-xl">📄</span>
+            <div class="flex flex-col">
+              <span class="font-medium text-[var(--text-primary)] text-sm truncate w-48">{{ file }}.md</span>
+              <span class="text-xs opacity-60 uppercase tracking-wide">note</span>
+            </div>
+          </a>
         </li>
         {% empty %}
         <li class="text-sm opacity-50 italic">No documents synced.</li>

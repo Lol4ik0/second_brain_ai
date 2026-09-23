@@ -124,4 +124,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- ОБРАБОТКА ВНЕШНИХ ССЫЛОК ИЗ ЧАТА ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedFile = urlParams.get('file');
+    console.log("Проверяем наличие внешнего параметра 'file':", encodedFile);
+
+    if (encodedFile) {
+        try {
+            // Декодируем и чистим имя от пробелов и .md на конце
+            const requestedFile = decodeURIComponent(encodedFile).trim();
+            const cleanRequestedName = requestedFile.replace(/\.md$/i, '').trim();
+
+            console.log("Пытаемся открыть заметку:", cleanRequestedName);
+
+            // Ищем нужный файл в списке
+            const requestedItem = Array.from(fileItems).find(item => {
+                // Пытаемся найти по атрибуту data-filename (чистим от .md)
+                const dataName = (item.getAttribute('data-filename') || '').replace(/\.md$/i, '').trim();
+
+                // Пытаемся найти по видимому тексту внутри элемента (чистим от пробелов)
+                const textName = item.textContent.trim();
+
+                // Если хоть что-то совпало - бинго!
+                return dataName === cleanRequestedName || textName === cleanRequestedName;
+            });
+
+            if (requestedItem) {
+                console.log("Заметка найдена! Кликаем.");
+
+                // Прокручиваем меню до этого файла
+                requestedItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Делаем реальный клик (это запустит загрузку контента и бэклинков)
+                requestedItem.click();
+
+                // Очищаем URL
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.delete('file');
+                window.history.replaceState({}, document.title, newUrl);
+            } else {
+                console.warn(`Файл '${cleanRequestedName}' не найден в File Explorer. Проверь классы и текст.`);
+            }
+        } catch (error) {
+            console.error('Ошибка при обработке ссылки:', error);
+        }
+    }
+
 });
