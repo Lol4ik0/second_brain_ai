@@ -1000,3 +1000,159 @@ google.genai.errors.ClientError: 404 NOT_FOUND. {'error': {'code': 404, 'message
 [RAG ENGINE] 2026-09-23 18:16:54,367 - INFO - ПК Выключен. Текст генерирует Gemini 3.6 Flash.
 [RAG ENGINE] 2026-09-23 18:16:54,871 - INFO - База найдена (векторов: 288). Загружаем из ChromaDB.
 [RAG ENGINE] 2026-09-23 18:16:54,961 - INFO - Обнаружены изменения в GitHub! Синхронизируем векторную базу...
+[RAG ENGINE] 2026-09-23 18:18:01,512 - INFO - Синхронизация векторов завершена. Обновлено/добавлено файлов: 167
+[RAG ENGINE] 2026-09-23 18:56:05,754 - INFO - Обработка запроса: Based on my vault, write a very short, 2-sentence motivational daily briefing.
+[RAG ENGINE] 2026-09-23 20:08:49,027 - INFO - Обработка запроса: hi
+[RAG ENGINE] 2026-09-23 20:08:50,294 - INFO - ПК Включен. Текст генерирует Ollama.
+[RAG ENGINE] 2026-09-23 20:08:50,679 - INFO - База найдена (векторов: 576). Загружаем из ChromaDB.
+[RAG ENGINE] 2026-09-23 20:08:50,773 - INFO - Обнаружены изменения в GitHub! Синхронизируем векторную базу...
+[RAG ENGINE] 2026-09-23 20:10:14,998 - INFO - Синхронизация векторов завершена. Обновлено/добавлено файлов: 167
+[RAG ENGINE] 2026-09-23 20:11:37,641 - INFO - Обработка запроса: no but what could u say about it?
+[RAG ENGINE] 2026-09-23 20:11:38,145 - INFO - Смена состояния ПК. Сброс кэша LLM.
+[RAG ENGINE] 2026-09-23 20:11:39,314 - INFO - Текст генерирует Gemini 2.5 Flash.
+[RAG ENGINE] 2026-09-23 20:11:39,584 - INFO - База найдена (векторов: 864). Загружаем из ChromaDB.
+[RAG ENGINE] 2026-09-23 20:11:39,587 - INFO - Обнаружены изменения в GitHub! Синхронизируем векторную базу...
+[RAG ENGINE] 2026-09-23 20:12:51,284 - INFO - Синхронизация векторов завершена. Обновлено/добавлено файлов: 167
+[RAG ENGINE] 2026-09-23 20:12:51,659 - ERROR - Ошибка RAG: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API (https://ai.google.dev/gemini-api/docs/get-started).', 'status': 'NOT_FOUND'}}
+Traceback (most recent call last):
+  File "/app/ai_manager/core/rag_engine.py", line 172, in ask_second_brain
+    response = engine.chat(user_query)
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index_instrumentation/dispatcher.py", line 413, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/callbacks/utils.py", line 42, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/chat_engine/context.py", line 221, in chat
+    response = synthesizer.synthesize(message, nodes)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index_instrumentation/dispatcher.py", line 413, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/response_synthesizers/base.py", line 288, in synthesize
+    response_str = self.get_response(
+                   ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index_instrumentation/dispatcher.py", line 413, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/response_synthesizers/compact_and_refine.py", line 43, in get_response
+    return super().get_response(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index_instrumentation/dispatcher.py", line 413, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/response_synthesizers/refine.py", line 607, in get_response
+    return self._run_refine_loop(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/response_synthesizers/refine.py", line 497, in _run_refine_loop
+    if resp := self._update_response(program, prompt_kwargs, response_kwargs):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/response_synthesizers/refine.py", line 329, in _update_response
+    program(
+  File "/usr/local/lib/python3.12/site-packages/llama_index_instrumentation/dispatcher.py", line 413, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/response_synthesizers/refine.py", line 109, in __call__
+    answer = self._llm.predict(
+             ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index_instrumentation/dispatcher.py", line 413, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/llms/llm.py", line 637, in predict
+    chat_response = self.chat(messages)
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index_instrumentation/dispatcher.py", line 413, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/core/llms/callbacks.py", line 179, in wrapped_llm_chat
+    f_return_val = f(_self, messages, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/llms/google_genai/base.py", line 393, in chat
+    return self._chat(messages, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/llms/google_genai/base.py", line 114, in wrapper
+    return retry(f)(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 331, in wrapped_f
+    return copy(f, *args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 371, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 393, in <lambda>
+    self._add_action_func(lambda rs: rs.outcome.result())
+                                     ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/llama_index/llms/google_genai/base.py", line 361, in _chat
+    response = chat.send_message(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/google/genai/chats.py", line 331, in send_message
+    response = self._modules.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/google/genai/models.py", line 6210, in generate_content
+    return self._generate_content(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/google/genai/models.py", line 4688, in _generate_content
+    response = self._api_client.request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/google/genai/_api_client.py", line 1750, in request
+    response = self._request(http_request, http_options, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/google/genai/_api_client.py", line 1537, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 371, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/local/lib/python3.12/site-packages/tenacity/__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/google/genai/_api_client.py", line 1514, in _request_once
+    errors.APIError.raise_for_response(response)
+  File "/usr/local/lib/python3.12/site-packages/google/genai/errors.py", line 173, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+  File "/usr/local/lib/python3.12/site-packages/google/genai/errors.py", line 202, in raise_error
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API (https://ai.google.dev/gemini-api/docs/get-started).', 'status': 'NOT_FOUND'}}
+[RAG ENGINE] 2026-09-23 20:14:13,192 - INFO - Обработка запроса: hi
+[RAG ENGINE] 2026-09-23 20:14:14,329 - INFO - ПК Включен. Текст генерирует Ollama.
+[RAG ENGINE] 2026-09-23 20:14:14,606 - INFO - База найдена (векторов: 1152). Загружаем из ChromaDB.
+[RAG ENGINE] 2026-09-23 20:14:14,716 - INFO - Обнаружены изменения в GitHub! Синхронизируем векторную базу...
+[RAG ENGINE] 2026-09-23 20:15:15,229 - INFO - Синхронизация векторов завершена. Обновлено/добавлено файлов: 167
+[RAG ENGINE] 2026-09-23 20:15:29,541 - INFO - Обработка запроса: no but what could u say about it?
+[RAG ENGINE] 2026-09-23 20:16:07,178 - INFO - Обработка запроса: what else
+[RAG ENGINE] 2026-09-23 20:16:07,680 - INFO - Смена состояния ПК. Сброс кэша LLM.
+[RAG ENGINE] 2026-09-23 20:16:08,764 - INFO - Текст генерирует Gemini 3.6 Flash.
+[RAG ENGINE] 2026-09-23 20:16:08,979 - INFO - База найдена (векторов: 1440). Загружаем из ChromaDB.
+[RAG ENGINE] 2026-09-23 20:16:08,981 - INFO - Обнаружены изменения в GitHub! Синхронизируем векторную базу...
+[RAG ENGINE] 2026-09-23 20:17:23,224 - INFO - Синхронизация векторов завершена. Обновлено/добавлено файлов: 167
+[RAG ENGINE] 2026-09-23 20:18:02,548 - INFO - Обработка запроса: and what to learn?
+[RAG ENGINE] 2026-09-23 20:52:13,922 - INFO - Обработка запроса: Какие у меня планы на магистратуру?
+[RAG ENGINE] 2026-09-23 20:52:15,574 - INFO - Текст генерирует Gemini 3.6 Flash.
+[RAG ENGINE] 2026-09-23 20:52:16,269 - INFO - База найдена (векторов: 1728). Загружаем из ChromaDB.
+[RAG ENGINE] 2026-09-23 20:52:16,360 - INFO - Обнаружены изменения в GitHub! Синхронизируем векторную базу...

@@ -13,7 +13,7 @@
         <p class="text-sm mt-1">Documents being analyzed</p>
       </header>
 
-      <ul class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
+      <ul id="context-file-list" class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
         {% for file in context_files %}
         <li>
           <a href="{% url 'notes' %}?file={{ file|urlencode }}" class="glass-card rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-800 transition-colors">
@@ -29,11 +29,11 @@
         {% endfor %}
       </ul>
 
-      <button type="button" class="btn-primary w-full py-2 rounded-lg text-sm font-bold border border-dashed">+ Add Documents</button>
+      <button id="add-documents-button" type="button" class="btn-primary w-full py-2 rounded-lg text-sm font-bold border border-dashed">+ Add Documents</button>
 
       <article class="glass-card rounded-xl p-4 mt-auto border-[var(--active-accent)]">
         <h3 class="font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2"><span>✨</span> Active Core</h3>
-        <p class="text-sm font-medium text-[var(--active-accent)]">{{ config.ai_model|upper }}</p>
+        <p class="text-sm font-medium text-[var(--active-accent)]">{{ config.ai_strategy|upper }}</p>
         <p class="text-xs mt-1">Temp: {{ config.temperature }}</p>
       </article>
     </aside>
@@ -51,7 +51,7 @@
               <div class="text-2xl mt-1">✨</div>
               <div class="glass-card rounded-2xl rounded-tl-none p-4 max-w-[85%] border-[var(--active-accent)] shadow-[var(--glow-active)]">
                 <p class="text-[var(--text-primary)] leading-relaxed">
-                  Hello! I'm your AI assistant running on <strong class="text-[var(--active-accent)]">{{ config.ai_model }}</strong>. I've analyzed your selected documents. What would you like to know?
+                  Hello! I'm your AI assistant using the <strong class="text-[var(--active-accent)]">{{ config.ai_strategy|upper }}</strong> strategy. I've analyzed your selected documents. What would you like to know?
                 </p>
               </div>
             </article>
@@ -87,6 +87,39 @@
         </p>
       </div>
     </section>
+  <div id="context-modal" class="absolute inset-0 z-50 hidden flex min-h-0 items-start justify-center overflow-y-auto overflow-x-hidden p-4 lg:p-8 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="context-modal-title">
+    <div id="context-modal-backdrop" class="absolute inset-0"></div>
+    <section class="relative z-10 w-full max-w-4xl h-full max-h-full min-h-0 flex flex-col glass-card border border-[var(--border-glass)] shadow-2xl rounded-2xl overflow-hidden">
+      <header class="flex-none flex items-start justify-between p-6 border-b border-[var(--border-glass)]">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-[var(--active-accent)]">Context matrix</p>
+          <h2 id="context-modal-title" class="mt-1 text-xl font-bold text-[var(--text-primary)]">Add Documents</h2>
+          <p class="mt-1 text-sm opacity-70">Choose the notes available to the next AI request.</p>
+        </div>
+        <button id="close-context-modal" type="button" aria-label="Close document selector" class="text-2xl leading-none text-[var(--active-accent)] transition-transform hover:scale-110">&times;</button>
+      </header>
+
+      <div id="document-selector" class="flex-1 min-h-0 overflow-y-scroll overscroll-contain p-6">
+        <div class="flex flex-col gap-2">
+          {% for file in all_files %}
+          <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--border-glass)] bg-black/10 p-3 transition-colors hover:border-[var(--active-accent)] hover:bg-[var(--active-accent)]/10">
+            <input class="file-checkbox" type="checkbox" value="{{ file }}" {% if file in context_files %}checked{% endif %}>
+            <span class="text-lg">📄</span>
+            <span class="min-w-0 truncate text-sm text-[var(--text-primary)]">{{ file }}.md</span>
+          </label>
+          {% empty %}
+          <p class="text-sm italic opacity-60">No documents synced.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <footer class="flex-none p-6 border-t border-[var(--border-glass)] flex justify-end items-center gap-3">
+        <span id="selected-files-count" class="text-xs uppercase tracking-wider opacity-60">0 selected</span>
+        <button id="apply-context-button" type="button" class="btn-primary rounded-lg px-5 py-2 text-sm font-bold">Apply Context</button>
+      </footer>
+    </section>
+  </div>
+
   </main>
 
   <script src="{% static 'js/chat.js' %}"></script>

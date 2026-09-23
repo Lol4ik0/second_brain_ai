@@ -2,10 +2,93 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('.chat-input-form');
     const input = document.getElementById('chat-input');
     const chatFeed = document.getElementById('chat-feed');
+    const contextList = document.getElementById('context-file-list');
+    const contextModal = document.getElementById('context-modal');
+    const addDocumentsButton = document.getElementById('add-documents-button');
+    const closeContextModalButton = document.getElementById('close-context-modal');
+    const applyContextButton = document.getElementById('apply-context-button');
+    const contextModalBackdrop = document.getElementById('context-modal-backdrop');
+    const selectedFilesCount = document.getElementById('selected-files-count');
+    let selectedFiles = getSelectedFiles();
 
     if (chatFeed) {
         chatFeed.scrollTop = chatFeed.scrollHeight;
     }
+
+    function getSelectedFiles() {
+        return Array.from(document.querySelectorAll('#document-selector input[type="checkbox"]:checked'))
+            .map((checkbox) => checkbox.value);
+    }
+
+    function updateSelectedFilesCount() {
+        if (selectedFilesCount) {
+            const checkedCount = document.querySelectorAll('.file-checkbox:checked').length;
+            selectedFilesCount.textContent = `${checkedCount} selected`;
+        }
+    }
+
+    function renderContextFiles() {
+        if (!contextList) return;
+        contextList.replaceChildren();
+
+        if (!selectedFiles.length) {
+            const emptyState = document.createElement('li');
+            emptyState.className = 'text-sm opacity-60 italic';
+            emptyState.textContent = 'All documents';
+            contextList.appendChild(emptyState);
+            return;
+        }
+
+        selectedFiles.forEach((file) => {
+            const item = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `/notes/?file=${encodeURIComponent(file)}`;
+            link.className = 'glass-card rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-800 transition-colors';
+
+            const icon = document.createElement('span');
+            icon.className = 'text-xl';
+            icon.textContent = '📄';
+            const details = document.createElement('div');
+            details.className = 'flex flex-col';
+            const name = document.createElement('span');
+            name.className = 'font-medium text-[var(--text-primary)] text-sm truncate w-48';
+            name.textContent = `${file}.md`;
+            const type = document.createElement('span');
+            type.className = 'text-xs opacity-60 uppercase tracking-wide';
+            type.textContent = 'note';
+            details.append(name, type);
+            link.append(icon, details);
+            item.appendChild(link);
+            contextList.appendChild(item);
+        });
+    }
+
+    function setContextModalOpen(isOpen) {
+        if (!contextModal) return;
+        contextModal.classList.toggle('hidden', !isOpen);
+        contextModal.classList.toggle('flex', isOpen);
+        document.body.classList.toggle('overflow-hidden', isOpen);
+        if (isOpen) updateSelectedFilesCount();
+    }
+
+    document.querySelectorAll('.file-checkbox').forEach((checkbox) => {
+        checkbox.addEventListener('change', updateSelectedFilesCount);
+    });
+
+    if (addDocumentsButton) addDocumentsButton.addEventListener('click', () => setContextModalOpen(true));
+    if (closeContextModalButton) closeContextModalButton.addEventListener('click', () => setContextModalOpen(false));
+    if (contextModalBackdrop) contextModalBackdrop.addEventListener('click', () => setContextModalOpen(false));
+    if (applyContextButton) {
+        applyContextButton.addEventListener('click', () => {
+            selectedFiles = getSelectedFiles();
+            renderContextFiles();
+            setContextModalOpen(false);
+        });
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setContextModalOpen(false);
+    });
+    updateSelectedFilesCount();
 
     if (!form) return;
 
@@ -40,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/send-message/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ message: message, selected_files: selectedFiles })
             });
 
             const data = await response.json();

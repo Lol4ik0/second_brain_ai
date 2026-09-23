@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             email: document.getElementById('email-address')?.value || 'alex@example.com',
             theme: document.getElementById('theme-select')?.value || 'cyberpunk',
             accent_color: selectedAccent,
-            ai_model: document.getElementById('ai-model')?.value || 'llama3',
+            ai_strategy: document.getElementById('ai-strategy')?.value || 'auto',
             temperature: tempSlider?.value || 0.7,
             github_repo_url: document.getElementById('github-repo')?.value || '',
             github_token: document.getElementById('github-token')?.value || ''

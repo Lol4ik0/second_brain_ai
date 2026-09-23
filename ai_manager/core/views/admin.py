@@ -32,7 +32,7 @@ def api_admin_update_row(request):
                 obj.save()
             elif target_table == 'settings':
                 obj = UserSettings.objects.get(id=row_id)
-                for f in ['display_name', 'theme', 'accent_color', 'ai_model', 'github_repo_url']:
+                for f in ['display_name', 'theme', 'accent_color', 'ai_strategy', 'github_repo_url']:
                     setattr(obj, f, fields.get(f, getattr(obj, f)))
                 obj.temperature = float(fields.get('temperature', obj.temperature))
                 obj.save()

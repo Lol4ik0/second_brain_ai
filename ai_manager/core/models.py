@@ -38,11 +38,17 @@ class EncryptedCharField(models.CharField):
 # --- DATABASE MODELS ---
 
 class UserSettings(models.Model):
+    AI_STRATEGY_CHOICES = [
+        ('auto', 'Auto-Hybrid'),
+        ('local_only', 'Strictly Local'),
+        ('cloud_only', 'Cloud Only'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
     display_name = models.CharField(max_length=100, blank=True)
     theme = models.CharField(max_length=20, default='cyberpunk')
     accent_color = models.CharField(max_length=20, default='cyan')
-    ai_model = models.CharField(max_length=50, default='llama3')
+    ai_strategy = models.CharField(max_length=20, choices=AI_STRATEGY_CHOICES, default='auto')
     temperature = models.FloatField(default=0.7)
 
     github_repo_url = models.URLField(max_length=500, blank=True, default="")
@@ -96,7 +102,7 @@ def create_user_settings(sender, instance, created, **kwargs):
             display_name=instance.username,
             theme='cyberpunk',
             accent_color='cyan',
-            ai_model='llama3',
+            ai_strategy='auto',
             temperature=0.7,
             github_repo_url="",
             github_token=""

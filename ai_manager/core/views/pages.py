@@ -61,10 +61,12 @@ def ai_chat_view(request):
                     synced_notes.append(file.replace(".md", ""))
                     
     chat_history = reversed(ChatMessage.objects.filter(user=request.user).order_by('-created_at')[:50])
+    synced_notes.sort()
     context = {
         'active_page': 'ai-chat', 
         'config': get_user_config(request.user),
         'context_files': synced_notes[:10],
+        'all_files': synced_notes,
         'chat_history': chat_history
     }
     return render(request, 'ai-chat.html', context)

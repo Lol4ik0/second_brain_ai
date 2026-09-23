@@ -15,10 +15,14 @@ def api_chat_message(request):
     if request.method == "POST":
         data = json.loads(request.body)
         user_message = data.get('message', '')
+        selected_files = data.get('selected_files', data.get('selectedFiles', []))
+        if not isinstance(selected_files, list):
+            selected_files = []
+        selected_files = [file_name for file_name in selected_files if isinstance(file_name, str)]
         
         if user_message:
             ChatMessage.objects.create(user=request.user, role='user', content=user_message)
-            ai_response = rag_engine.ask_second_brain(user_message, request.user)
+            ai_response = rag_engine.ask_second_brain(user_message, request.user, selected_files)
             ChatMessage.objects.create(user=request.user, role='ai', content=ai_response)
             return JsonResponse({'status': 'ok', 'reply': ai_response})
     return JsonResponse({'status': 'error'}, status=400)
@@ -33,7 +37,9 @@ def api_save_settings(request):
         settings.display_name = data.get('display_name', settings.display_name)
         settings.theme = data.get('theme', settings.theme)
         settings.accent_color = data.get('accent_color', settings.accent_color)
-        settings.ai_model = data.get('ai_model', settings.ai_model)
+        ai_strategy = data.get('ai_strategy', settings.ai_strategy)
+        if ai_strategy in {'auto', 'local_only', 'cloud_only'}:
+            settings.ai_strategy = ai_strategy
         settings.temperature = float(data.get('temperature', settings.temperature))
         settings.github_repo_url = data.get('github_repo_url', settings.github_repo_url).strip()
         settings.github_token = data.get('github_token', settings.github_token).strip()

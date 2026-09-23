@@ -6,6 +6,6 @@ def get_user_config(user):
         "email": "",
         "theme": "cyberpunk",
         "accent_color": "cyan",
-        "ai_model": "llama3",
+        "ai_strategy": "auto",
         "temperature": "0.7"
     }

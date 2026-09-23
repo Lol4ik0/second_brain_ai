@@ -127,9 +127,10 @@
                                     </select>
                                 </td>
                                 <td class="p-4">
-                                    <select name="ai_model" class="input-field rounded px-2 py-1 w-full bg-black bg-opacity-40 text-sm">
-                                        <option value="llama3" {% if s.ai_model == 'llama3' %}selected{% endif %}>Llama3</option>
-                                        <option value="phi3" {% if s.ai_model == 'phi3' %}selected{% endif %}>Phi3</option>
+                                    <select name="ai_strategy" class="input-field rounded px-2 py-1 w-full bg-black bg-opacity-40 text-sm">
+                                        <option value="auto" {% if s.ai_strategy == 'auto' %}selected{% endif %}>Auto-Hybrid</option>
+                                        <option value="local_only" {% if s.ai_strategy == 'local_only' %}selected{% endif %}>Strictly Local</option>
+                                        <option value="cloud_only" {% if s.ai_strategy == 'cloud_only' %}selected{% endif %}>Cloud Only</option>
                                     </select>
                                 </td>
                                 <td class="p-4"><input type="number" name="temperature" step="0.1" min="0" max="1" value="{{ s.temperature }}" class="input-field rounded px-2 py-1 w-full bg-black bg-opacity-40 text-sm"></td>
