@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Visual Navigation State Sync (Update Left Sidebar Highlight)
         fileItems.forEach(item => {
             if (item.getAttribute('data-filename') === noteName) {
-                item.classList.add('text-[var(--active-accent)]', 'bg-[var(--active-accent)]', 'bg-opacity-10', 'shadow-[var(--glow-active)]', 'border', 'border-[var(--active-accent)]', 'border-opacity-20');
+                item.classList.add('text-[var(--text-primary)]', 'bg-[var(--active-accent)]', 'bg-opacity-10', 'shadow-[var(--glow-active)]', 'border', 'border-[var(--active-accent)]', 'border-opacity-20');
             } else {
-                item.classList.remove('text-[var(--active-accent)]', 'bg-[var(--active-accent)]', 'bg-opacity-10', 'shadow-[var(--glow-active)]', 'border', 'border-[var(--active-accent)]', 'border-opacity-20');
+                item.classList.remove('text-[var(--text-primary)]', 'bg-[var(--active-accent)]', 'bg-opacity-10', 'shadow-[var(--glow-active)]', 'border', 'border-[var(--active-accent)]', 'border-opacity-20');
             }
         });
 

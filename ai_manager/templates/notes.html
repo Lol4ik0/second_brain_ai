@@ -20,7 +20,7 @@
                     </div>
                     <ul class="ml-4 flex flex-col gap-1 border-l border-[var(--border-glass)] pl-2 file-list-container">
                         {% for note in user_notes %}
-                            <li class="file-item cursor-pointer hover:text-[var(--text-primary)] px-2 py-1.5 rounded hover:bg-[var(--bg-glass)] transition-colors flex items-center gap-2" data-filename="{{ note }}">
+                            <li class="file-item text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] px-2 py-1.5 rounded hover:bg-[var(--bg-glass)] transition-colors flex items-center gap-2" data-filename="{{ note }}">
                                 <span class="opacity-70">📄</span> <span class="truncate text-xs">{{ note }}</span>
                             </li>
                         {% empty %}

@@ -9,12 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetTab = btn.getAttribute('data-tab');
 
             // Reset navigation layouts
-            tabButtons.forEach(b => b.classList.remove('bg-purple-500', 'bg-opacity-10', 'text-purple-400', 'shadow-[0_0_15px_rgba(176,38,255,0.1)]', 'border', 'border-purple-500', 'border-opacity-20'));
+            tabButtons.forEach(b => b.classList.remove('bg-purple-500', 'bg-opacity-10', 'text-white', 'text-purple-400', 'shadow-[0_0_15px_rgba(176,38,255,0.1)]', 'border', 'border-purple-500', 'border-opacity-20'));
             tabButtons.forEach(b => b.classList.add('text-gray-400', 'hover:bg-[var(--bg-glass)]', 'hover:text-white'));
             sections.forEach(s => s.classList.replace('block', 'hidden'));
 
             // Toggle active tracking view
-            btn.classList.replace('text-gray-400', 'text-purple-400');
+            btn.classList.replace('text-gray-400', 'text-white');
             btn.classList.add('bg-purple-500', 'bg-opacity-10', 'shadow-[0_0_15px_rgba(176,38,255,0.1)]', 'border', 'border-purple-500', 'border-opacity-20');
             document.getElementById(targetTab)?.classList.replace('hidden', 'block');
         });
