@@ -27,7 +27,8 @@ services:
       - .:/app
     environment:
       # ВАЖНО: Указываем Django, как найти Ollama на твоем компьютере Windows
-      - OLLAMA_HOST=http://host.docker.internal:11434
+      # - OLLAMA_HOST=http://host.docker.internal:11434
+      - OLLAMA_HOST=0.0.0.0:11434
       - DEBUG=True
     env_file:
       - .env
