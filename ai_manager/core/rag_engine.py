@@ -106,10 +106,12 @@ def ask_second_brain(user_query, user):
             vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
             
-            # Проверяем, пустая ли коллекция
+            # Проверяем количество векторов напрямую в базе
             if chroma_collection.count() == 0:
                 logger.info("База пуста. Начинаем создание векторов (CPU сервера)...")
-                documents = SimpleDirectoryReader(paths["notes_dir"], required_exts=[".md"], recursive=True).load_data() if sync_success and os.path.exists(paths["notes_dir"]) else []
+                documents = []
+                if sync_success and os.path.exists(paths["notes_dir"]):
+                    documents = SimpleDirectoryReader(paths["notes_dir"], required_exts=[".md"], recursive=True).load_data()
                 
                 if documents:
                     index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
@@ -118,6 +120,15 @@ def ask_second_brain(user_query, user):
             else:
                 logger.info(f"База найдена (векторов: {chroma_collection.count()}). Загружаем из ChromaDB.")
                 index = VectorStoreIndex.from_vector_store(vector_store)
+                
+                # УМНОЕ ОБНОВЛЕНИЕ (Smart Sync)
+                if sync_success and os.path.exists(paths["notes_dir"]):
+                    logger.info("Обнаружены изменения в GitHub! Синхронизируем векторную базу...")
+                    documents = SimpleDirectoryReader(paths["notes_dir"], required_exts=[".md"], recursive=True).load_data()
+                    
+                    # refresh_ref_docs сверяет хэши файлов и векторизует только новые/измененные
+                    refreshed = index.refresh_ref_docs(documents)
+                    logger.info(f"Синхронизация векторов завершена. Обновлено/добавлено файлов: {sum(refreshed)}")
                 
             engine = index.as_chat_engine(
                 chat_mode="context",
