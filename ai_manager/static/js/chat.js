@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyContextButton = document.getElementById('apply-context-button');
     const contextModalBackdrop = document.getElementById('context-modal-backdrop');
     const selectedFilesCount = document.getElementById('selected-files-count');
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const fileCheckboxes = Array.from(document.querySelectorAll('.file-checkbox'));
     let selectedFiles = getSelectedFiles();
 
     if (chatFeed) {
@@ -21,9 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSelectedFilesCount() {
+        const checkedCount = fileCheckboxes.filter((checkbox) => checkbox.checked).length;
         if (selectedFilesCount) {
-            const checkedCount = document.querySelectorAll('.file-checkbox:checked').length;
             selectedFilesCount.textContent = `${checkedCount} selected`;
+        }
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = fileCheckboxes.length > 0 && checkedCount === fileCheckboxes.length;
         }
     }
 
@@ -71,9 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isOpen) updateSelectedFilesCount();
     }
 
-    document.querySelectorAll('.file-checkbox').forEach((checkbox) => {
+    fileCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener('change', updateSelectedFilesCount);
     });
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', () => {
+            fileCheckboxes.forEach((checkbox) => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateSelectedFilesCount();
+        });
+    }
 
     if (addDocumentsButton) addDocumentsButton.addEventListener('click', () => setContextModalOpen(true));
     if (closeContextModalButton) closeContextModalButton.addEventListener('click', () => setContextModalOpen(false));

@@ -113,8 +113,14 @@
         </div>
       </div>
 
-      <footer class="flex-none p-6 border-t border-[var(--border-glass)] flex justify-end items-center gap-3">
-        <span id="selected-files-count" class="text-xs uppercase tracking-wider opacity-60">0 selected</span>
+      <footer class="flex-none p-6 border-t border-[var(--border-glass)] flex justify-between items-center gap-3">
+        <div class="flex items-center gap-5">
+          <label for="select-all-checkbox" class="flex items-center gap-2 cursor-pointer text-sm text-[var(--text-primary)]">
+            <input id="select-all-checkbox" type="checkbox" class="cursor-pointer accent-[var(--active-accent)]">
+            <span>Select All</span>
+          </label>
+          <span id="selected-files-count" class="text-xs uppercase tracking-wider opacity-60">0 selected</span>
+        </div>
         <button id="apply-context-button" type="button" class="btn-primary rounded-lg px-5 py-2 text-sm font-bold">Apply Context</button>
       </footer>
     </section>

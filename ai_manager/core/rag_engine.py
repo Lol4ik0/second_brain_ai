@@ -171,7 +171,7 @@ def ask_second_brain(user_query, user, selected_files=None):
 
         engine = _user_indexes[user.id].as_chat_engine(
             chat_mode="context",
-            similarity_top_k=3,
+            similarity_top_k=5,
             system_prompt=(
                 f"You are the secure personal AI Assistant of {user.username}. "
                 "Answer questions ONLY based on the provided personal notes context."
