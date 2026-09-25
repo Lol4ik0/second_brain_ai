@@ -4,6 +4,7 @@
 {% block title %}Second Brain - Tasks{% endblock %}
 
 {% block content %}
+<!-- Task board with active and completed collections plus a creation dialog. -->
 <main class="p-8 lg:p-12 max-w-5xl mx-auto w-full relative z-10">
     <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -21,6 +22,7 @@
                 <span>🔥</span> Active Tasks ({{ active_tasks|length }})
             </h2>
             <div class="flex flex-col gap-4">
+                <!-- Active tasks expose status, priority, due date, and tags. -->
                 {% for task in active_tasks %}
                 <article class="glass-card rounded-xl p-5 flex items-start gap-4 hover:border-[var(--active-accent)] transition-colors">
                     <input type="checkbox" class="mt-1 w-5 h-5 task-checkbox" data-id="{{ task.id }}" {% if task.status == 'done' %}checked{% endif %} />
@@ -58,6 +60,7 @@
                 <span>✔️</span> Completed
             </h2>
             <div class="flex flex-col gap-4">
+                <!-- Completed records remain visible for review and reversible status changes. -->
                 {% for task in completed_tasks %}
                 <article class="glass-card rounded-xl p-5 flex items-start gap-4">
                     <input type="checkbox" checked class="mt-1 w-5 h-5 task-checkbox" data-id="{{ task.id }}" />
@@ -72,6 +75,7 @@
         </section>
     </div>
 
+    <!-- Modal form collects all optional task fields before the task API request. -->
     <div id="task-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="glass-card rounded-2xl p-8 w-full max-w-md shadow-2xl border-[var(--active-accent)]">
             <h2 class="text-2xl font-bold text-white mb-6">Create New Task</h2>
@@ -106,5 +110,6 @@
     </div>
 </main>
 
+<!-- Handles task completion toggles and asynchronous task creation. -->
 <script src="{% static 'js/tasks.js' %}"></script>
 {% endblock %}

@@ -2,12 +2,14 @@
 <html lang="en" data-theme="{{ config.theme }}" data-accent="{{ config.accent_color|default:'cyan' }}">
 <head>
     {% load static %}
+    <!-- Shared document metadata and compiled application styles. -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Second Brain{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body class="bg-[var(--bg-base)] text-[var(--text-secondary)] font-sans h-screen overflow-hidden transition-colors duration-300">
+    <!-- Application shell: persistent sidebar plus the active page content region. -->
     <div id="app-wrapper" class="flex h-screen w-screen min-h-0 overflow-hidden">
         {% include "sidebar.html" with active=active_page %}
         
@@ -21,12 +23,16 @@
                 </div>
             </header>
 
+            <!-- Child templates render their page-specific content inside this shell. -->
             {% block content %}
             {% endblock %}
         </div>
     </body>
+    <!-- Shared responsive navigation behavior for the base shell. -->
     <script src="{% static 'js/layout.js' %}"></script>
     <script>
+        // Mirror the external layout controller so the shared shell remains usable
+        // on pages where these base-template controls are present.
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('main-sidebar');
             const openBtn = document.getElementById('mobile-menu-open');

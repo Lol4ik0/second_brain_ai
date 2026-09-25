@@ -1,3 +1,9 @@
+# RAG and hybrid inference orchestration for the Second Brain application.
+# This module synchronizes each user's Markdown vault, maintains a per-user
+# Chroma-backed vector index, applies optional filename filters, and routes
+# generation to either the user's local Ollama service or Google Gemini.
+# Django views call ask_second_brain(); Git operations are delegated to
+# git_sync.py, while LlamaIndex connects embeddings, retrieval, and chat.
 import os
 import requests
 import logging
@@ -14,7 +20,7 @@ from .git_sync import sync_obsidian_repo
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
 
-# --- НАСТРОЙКА ЛОГИРОВАНИЯ ---
+# Configure rotating file and console logging for RAG and synchronization events.
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 os.makedirs(LOGS_DIR, exist_ok=True)
 
@@ -34,15 +40,21 @@ if logger.hasHandlers():
 
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
-# -----------------------------
+# End of logging configuration.
 
+# Cache user-specific chat engines and vector indexes to avoid rebuilding them
+# for every message; reset_chat_engine invalidates these entries after settings change.
 _user_chat_engines = {}
 _user_indexes = {}
 LOCAL_OLLAMA_URL = "http://192.168.1.128:11434"
 
-# ГЛОБАЛЬНАЯ НАСТРОЙКА ВЕКТОРОВ (Локально на сервере, размерность 384)
+# Use the same 384-dimensional embedding model for indexing and query vectors.
 Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
+# Probe the configured local Ollama endpoint with a short timeout so offline
+# hardware does not stall normal cloud-backed requests.
+# Parameters: timeout is the HTTP request timeout, in seconds.
+# Returns: True only when the Ollama tags endpoint responds successfully.
 def is_local_ai_ready(timeout=0.5):
     try:
         response = requests.get(f"{LOCAL_OLLAMA_URL}/api/tags", timeout=timeout)
@@ -50,6 +62,9 @@ def is_local_ai_ready(timeout=0.5):
     except requests.exceptions.RequestException:
         return False
 
+# Invalidate one user's cached index and engine, or clear every cached entry.
+# Parameters: user_id optionally identifies the account whose cache must be reset.
+# Returns: None; subsequent requests rebuild the affected runtime objects.
 def reset_chat_engine(user_id=None):
     global _user_chat_engines, _user_indexes
     if user_id and user_id in _user_chat_engines:
@@ -59,6 +74,9 @@ def reset_chat_engine(user_id=None):
         _user_chat_engines.clear()
         _user_indexes.clear()
 
+# Derive filesystem and Chroma collection locations from the authenticated user ID.
+# Parameters: user is the Django User whose private vault is being accessed.
+# Returns: a mapping containing that user's notes directory and collection name.
 def get_user_paths(user):
     user_folder = f"user_{user.id}"
     return {
@@ -66,6 +84,10 @@ def get_user_paths(user):
         "collection_name": f"collection_user_{user.id}"
     }
 
+# Run the full retrieval-augmented response pipeline for one authenticated user.
+# Parameters: user_query is the prompt text; user supplies account settings and
+# identity; selected_files optionally restricts retrieval to Markdown filenames.
+# Returns: the generated response as text, or a user-facing/system error message.
 def ask_second_brain(user_query, user, selected_files=None):
     global _user_chat_engines, _user_indexes
     selected_files = selected_files or []
@@ -78,12 +100,15 @@ def ask_second_brain(user_query, user, selected_files=None):
     except (TypeError, ValueError):
         temp = 0.7
     
+    # Log the incoming request before checking configuration or initializing services.
     logger.info(f"Обработка запроса: {user_query}")
     
     if not settings.github_repo_url:
         return "System Notification: Please configure your GitHub link."
 
     try:
+        # Detect local hardware once, then resolve the persisted strategy into a
+        # concrete provider choice. Strict-local mode fails closed when offline.
         local_online = is_local_ai_ready()
 
         if ai_strategy == 'local_only' and not local_online:
@@ -94,15 +119,20 @@ def ask_second_brain(user_query, user, selected_files=None):
             or (ai_strategy == 'auto' and local_online)
         )
         
+        # A cached engine is valid only for the provider mode it was created with;
+        # reset it when connectivity or the configured strategy changes that mode.
         if user.id in _user_chat_engines:
             if getattr(_user_chat_engines[user.id], '_is_local_engine', False) != use_local_ai:
                 logger.info("Смена состояния ПК. Сброс кэша LLM.")
                 reset_chat_engine(user.id)
 
+        # First use performs repository synchronization, configures the LLM, and
+        # opens or builds the user's persistent vector index.
         if user.id not in _user_chat_engines:
             sync_success = sync_obsidian_repo(settings.github_repo_url, settings.github_token, paths["notes_dir"])
             
-            # МАРШРУТИЗАЦИЯ ТОЛЬКО ДЛЯ ТЕКСТА (LLM)
+            # Route text generation independently from the server-side embedding
+            # model: Ollama serves local mode, while Gemini serves cloud mode.
             if use_local_ai:
                 logger.info("ПК Включен. Текст генерирует Ollama.")
                 Settings.llm = Ollama(
@@ -120,15 +150,16 @@ def ask_second_brain(user_query, user, selected_files=None):
                     temperature=temp,
                 )
             
-            # Инициализация ChromaDB
+            # Attach the user's isolated Chroma collection to a LlamaIndex store.
             db = chromadb.PersistentClient(path=DB_DIR)
             
-            # get_or_create_collection сам создаст базу, если её нет, без ошибок
+            # Create the collection on first use, or reopen it on later requests.
             chroma_collection = db.get_or_create_collection(paths["collection_name"])
             vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
             
-            # Проверяем количество векторов напрямую в базе
+            # An empty collection requires an initial document load; a populated
+            # collection can be reopened and incrementally refreshed.
             if chroma_collection.count() == 0:
                 logger.info("База пуста. Начинаем создание векторов (CPU сервера)...")
                 documents = []
@@ -143,17 +174,22 @@ def ask_second_brain(user_query, user, selected_files=None):
                 logger.info(f"База найдена (векторов: {chroma_collection.count()}). Загружаем из ChromaDB.")
                 index = VectorStoreIndex.from_vector_store(vector_store)
                 
-                # УМНОЕ ОБНОВЛЕНИЕ (Smart Sync)
+                # Smart sync compares reference-document hashes with the current
+                # vault contents, embedding only new or changed documents and
+                # removing stale references according to LlamaIndex refresh behavior.
                 if sync_success and os.path.exists(paths["notes_dir"]):
                     logger.info("Обнаружены изменения в GitHub! Синхронизируем векторную базу...")
                     documents = SimpleDirectoryReader(paths["notes_dir"], required_exts=[".md"], recursive=True).load_data()
                     
-                    # refresh_ref_docs сверяет хэши файлов и векторизует только новые/измененные
+                    # refresh_ref_docs compares stored reference hashes with the
+                    # synchronized files and re-embeds only changed references.
                     refreshed = index.refresh_ref_docs(documents)
                     logger.info(f"Синхронизация векторов завершена. Обновлено/добавлено файлов: {sum(refreshed)}")
                 
             _user_indexes[user.id] = index
 
+        # Translate selected UI filenames into exact metadata filters. An empty
+        # selection deliberately omits filters so retrieval spans the whole vault.
         chat_engine_options = {}
         if selected_files:
             file_names = [
@@ -169,6 +205,8 @@ def ask_second_brain(user_query, user, selected_files=None):
             )
             chat_engine_options["filters"] = my_filters
 
+        # Retrieve the five most similar chunks for context; more chunks can add
+        # evidence but also consume prompt tokens and may introduce noise.
         engine = _user_indexes[user.id].as_chat_engine(
             chat_mode="context",
             similarity_top_k=5,
@@ -180,6 +218,8 @@ def ask_second_brain(user_query, user, selected_files=None):
         )
         engine._is_local_engine = use_local_ai
         _user_chat_engines[user.id] = engine
+        # Pass the user's question into retrieval and generation, then normalize
+        # LlamaIndex's response object to plain text for the JSON API.
         response = engine.chat(user_query)
         return str(response)
         

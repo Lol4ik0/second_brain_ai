@@ -4,6 +4,7 @@
 {% block title %}Second Brain - Home{% endblock %}
 
 {% block content %}
+<!-- Dashboard header combines account context with a shortcut into AI chat. -->
 <main class="p-8 lg:p-12 max-w-7xl mx-auto w-full relative z-10">
     <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -16,6 +17,7 @@
         </div>
     </header>
 
+    <!-- Summary cards: recent tasks, recent notes, and an AI-generated briefing. -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <article class="glass-card rounded-xl p-6 flex flex-col">
             <h3 class="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border-glass)] pb-2 flex justify-between items-center">
@@ -23,6 +25,7 @@
                 <a href="{% url 'tasks' %}" class="text-xs text-[var(--active-accent)] hover:underline">View All</a>
             </h3>
             <ul class="flex flex-col gap-3 flex-1">
+                <!-- Show a compact task sample with direct completion controls. -->
                 {% for task in recent_tasks %}
                     <li class="flex items-center gap-3 {% if task.status == 'done' %}opacity-50{% endif %}">
                         <input type="checkbox" class="task-checkbox cursor-pointer" data-id="{{ task.id }}" {% if task.status == 'done' %}checked{% endif %} /> 
@@ -37,6 +40,7 @@
         <article class="glass-card rounded-xl p-6">
             <h3 class="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border-glass)] pb-2">Recent Notes</h3>
             <ul class="flex flex-col gap-4">
+                <!-- Recent note names and filesystem modification age. -->
                 {% for note in recent_notes %}
                 <li>
                     <p class="font-semibold text-[var(--text-primary)] truncate" title="{{ note.name }}">{{ note.name }}</p>
@@ -64,6 +68,7 @@
     </div>
     
 
+    <!-- Kanban-style project board split by the task workflow state. -->
     <section>
         <h3 class="text-xl font-bold text-[var(--text-primary)] mb-6">Project Board</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -73,6 +78,7 @@
                     To Do 
                     <span class="bg-[var(--bg-glass)] px-2 py-1 rounded text-xs text-[var(--text-primary)]">{{ todo_tasks|length }}</span>
                 </h4>
+                <!-- Pending work cards. -->
                 {% for task in todo_tasks %}
                     <div class="glass-card rounded-lg p-4 hover:border-[var(--active-accent)] transition-colors cursor-pointer">
                         <p class="text-[var(--text-primary)] font-medium mb-3">{{ task.title }}</p>
@@ -100,6 +106,7 @@
                     In Progress 
                     <span class="bg-[var(--bg-glass)] px-2 py-1 rounded text-xs text-[var(--text-primary)]">{{ progress_tasks|length }}</span>
                 </h4>
+                <!-- In-progress work cards. -->
                 {% for task in progress_tasks %}
                     <div class="glass-card rounded-lg p-4 border-[var(--active-accent)] shadow-[var(--glow-active)] cursor-pointer">
                         <p class="text-[var(--text-primary)] font-medium mb-3">{{ task.title }}</p>
@@ -122,6 +129,7 @@
                     Done 
                     <span class="bg-[var(--bg-glass)] px-2 py-1 rounded text-xs text-[var(--text-primary)]">{{ done_tasks|length }}</span>
                 </h4>
+                <!-- Completed work cards. -->
                 {% for task in done_tasks %}
                     <div class="glass-card rounded-lg p-4 opacity-50 cursor-pointer">
                         <p class="text-[var(--text-primary)] font-medium mb-3 line-through">{{ task.title }}</p>
@@ -138,6 +146,7 @@
     </section>
 </main>
 
+<!-- Dashboard interactions are split between shared task controls and report/search behavior. -->
 <script src="{% static 'js/tasks.js' %}"></script>
 <script src="{% static 'js/home.js' %}"></script> 
 {% endblock %}

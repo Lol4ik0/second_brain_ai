@@ -1,6 +1,9 @@
 """
 WSGI config for ai_manager project.
 
+This deployment entry point exposes Django's synchronous request handler to WSGI
+servers; project behavior and middleware are defined in settings.py.
+
 It exposes the WSGI callable as a module-level variable named ``application``.
 
 For more information on this file, see

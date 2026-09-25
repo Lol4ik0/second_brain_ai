@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+<!-- User preferences page; settings.js previews and submits these values. -->
   <main class="p-8 lg:p-12 max-w-5xl mx-auto w-full">
     <header class="mb-10">
       <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-2">Settings</h1>
@@ -14,6 +15,7 @@
 
     <div class="grid grid-cols-1 gap-8 settings-container">
       
+      <!-- Profile identity fields map to the authenticated Django User. -->
       <section class="glass-card rounded-xl p-6">
         <h2 class="text-xl font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
           <span>👤</span> Profile Configuration
@@ -30,6 +32,7 @@
         </div>
       </section>
 
+      <!-- Theme and accent controls update the appearance tokens. -->
       <section class="glass-card rounded-xl p-6">
         <h2 class="text-xl font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
           <span>🎨</span> Appearance
@@ -64,6 +67,7 @@
         </div>
       </section>
 
+      <!-- AI routing, sampling temperature, and Git repository configuration. -->
       <section class="glass-card rounded-xl p-6">
         <h2 class="text-xl font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
           <span>✨</span> AI Assistant Core & Synchronization Matrix
@@ -103,5 +107,6 @@
     </div>
   </main>
   
+  <!-- Collects settings and sends them to the authenticated save endpoint. -->
   <script src="{% static 'js/settings.js' %}"></script>
 {% endblock %}

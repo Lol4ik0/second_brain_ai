@@ -1,3 +1,4 @@
+"""Superuser-only dashboard and JSON operations for administrative data tables."""
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -9,6 +10,9 @@ from ..models import UserSettings, Task, ChatMessage
 
 @user_passes_test(lambda u: u.is_superuser, login_url='login')
 def admin_dashboard_view(request):
+    # Load the administrative datasets and render the isolated Core Matrix UI.
+    # Parameters: request is restricted to authenticated superusers by the decorator.
+    # Returns: the admin dashboard with users, preferences, tasks, and recent messages.
     context = {
         'users': User.objects.all().order_by('id'),
         'settings': UserSettings.objects.all().order_by('id'),
@@ -20,6 +24,8 @@ def admin_dashboard_view(request):
 @csrf_exempt
 @user_passes_test(lambda u: u.is_superuser)
 def api_admin_update_row(request):
+    # Dispatch a table-row update to the appropriate Django model using posted fields.
+    # Returns: JSON status; lookup, validation, and persistence errors become HTTP 500.
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -56,6 +62,8 @@ def api_admin_update_row(request):
 @csrf_exempt
 @user_passes_test(lambda u: u.is_superuser)
 def api_admin_delete_row(request):
+    # Delete a selected row from an explicit allowlist of administrative models.
+    # Returns: JSON status or a client/server error when the target cannot be deleted.
     if request.method == "POST":
         try:
             data = json.loads(request.body)

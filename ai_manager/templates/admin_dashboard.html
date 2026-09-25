@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Standalone superuser console for inspecting and editing application records. -->
 <html lang="en" data-theme="cyberpunk" data-accent="purple">
 <head>
     {% load static %}
@@ -9,6 +10,7 @@
 </head>
 <body class="bg-[#07070a] text-gray-300 font-sans h-screen flex flex-col overflow-hidden">
 
+    <!-- Administrative identity, operator label, and session exit action. -->
     <header class="bg-[#0d0d14] border-b border-purple-500 border-opacity-20 px-8 py-4 flex items-center justify-between shadow-[0_0_30px_rgba(176,38,255,0.05)]">
         <div class="flex items-center gap-4">
             <span class="text-2xl animate-pulse text-purple-500">🌌</span>
@@ -26,7 +28,9 @@
         </div>
     </header>
 
+    <!-- Main admin shell: table navigation at left and active records at right. -->
     <div class="flex-1 flex overflow-hidden">
+        <!-- Tab buttons map to the section IDs rendered in the main panel. -->
         <aside class="w-64 bg-[#09090f] border-r border-white border-opacity-5 p-6 flex flex-col gap-2">
             <p class="text-[10px] uppercase font-mono tracking-widest text-gray-500 mb-2 px-4">Database Entities</p>
             <button data-tab="users-table" class="tab-btn w-full text-left px-4 py-3 rounded-xl transition-all font-medium text-sm flex items-center gap-3 bg-purple-500 bg-opacity-10 text-white border border-purple-500 border-opacity-20 shadow-[0_0_15px_rgba(176,38,255,0.1)]">
@@ -50,6 +54,7 @@
 
         <main class="flex-1 p-8 overflow-y-auto bg-black bg-opacity-40">
             
+            <!-- Django User records and authentication privilege controls. -->
             <section id="users-table" class="table-section block">
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-white uppercase tracking-wider">Authentication Users Entity</h2>
@@ -67,6 +72,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white divide-opacity-5">
+                            <!-- Each row is keyed by the database ID for API updates. -->
                             {% for u in users %}
                             <tr data-id="{{ u.id }}" class="hover:bg-white hover:bg-opacity-5 transition-colors">
                                 <td class="p-4 font-mono font-bold text-purple-500">{{ u.id }}</td>
@@ -89,6 +95,7 @@
                 </div>
             </section>
 
+            <!-- Per-account appearance, AI strategy, and repository preferences. -->
             <section id="settings-table" class="table-section hidden">
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-white uppercase tracking-wider">UserSettings Configuration Row</h2>
@@ -109,6 +116,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white divide-opacity-5">
+                            <!-- Preference row fields are serialized by admin.js. -->
                             {% for s in settings %}
                             <tr data-id="{{ s.id }}" class="hover:bg-white hover:bg-opacity-5 transition-colors">
                                 <td class="p-4 font-mono font-bold text-purple-500">{{ s.id }}</td>
@@ -146,6 +154,7 @@
                 </div>
             </section>
 
+            <!-- Global task records include owner, workflow, schedule, and tags. -->
             <section id="tasks-table" class="table-section hidden">
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-white uppercase tracking-wider">Global Task Database Entity</h2>
@@ -166,6 +175,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white divide-opacity-5">
+                            <!-- Task records are editable through the row transaction controls. -->
                             {% for t in tasks %}
                             <tr data-id="{{ t.id }}" class="hover:bg-white hover:bg-opacity-5 transition-colors">
                                 <td class="p-4 font-mono font-bold text-purple-500">{{ t.id }}</td>
@@ -199,6 +209,7 @@
                 </div>
             </section>
 
+            <!-- Recent chat turns for operational inspection and moderation. -->
             <section id="messages-table" class="table-section hidden">
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-white uppercase tracking-wider">Chat Log Architecture Records</h2>
@@ -216,6 +227,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white divide-opacity-5">
+                            <!-- Message role and content are editable per persisted turn. -->
                             {% for m in messages %}
                             <tr data-id="{{ m.id }}" class="hover:bg-white hover:bg-opacity-5 transition-colors">
                                 <td class="p-4 font-mono font-bold text-purple-500">{{ m.id }}</td>
@@ -241,6 +253,7 @@
         </main>
     </div>
 
+    <!-- Tab switching and privileged row update/delete requests. -->
     <script src="{% static 'js/admin.js' %}"></script>
 </body>
 </html>

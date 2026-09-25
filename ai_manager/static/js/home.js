@@ -1,5 +1,11 @@
+/*
+ * Dashboard interactions for global note search and AI-generated status reports.
+ * Search transfers a pending prompt to chat through sessionStorage; report requests
+ * call the same authenticated chat API and render its response in the dashboard.
+ */
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Route a non-empty Enter-submitted query to chat without placing it in the URL.
     // --- 1. GLOBAL SEARCH TO AI CHAT PIPELINE ---
     const searchInput = document.getElementById('global-search-input');
     
@@ -18,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Request a short vault-based briefing and expose loading, success, or failure state.
     // --- 2. AI STATUS REPORT GENERATOR ---
     const reportBtn = document.getElementById('generate-report-btn');
     const reportOutput = document.getElementById('ai-report-output');

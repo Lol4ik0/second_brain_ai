@@ -1,5 +1,7 @@
+<!-- Persistent primary navigation, account actions, and task synchronization status. -->
 <aside id="main-sidebar" class="fixed inset-y-0 left-0 w-64 lg:w-72 bg-[var(--bg-sidebar)] border-r border-[var(--border-glass)] flex flex-col h-full min-h-0 shrink-0 overflow-hidden backdrop-blur-md z-50 transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0">
     
+    <!-- Brand and mobile close control. -->
     <header class="p-6 border-b border-[var(--border-glass)] flex justify-between items-center">
         <div class="flex items-center gap-3">
             <h1 class="text-2xl font-bold text-[var(--text-primary)] tracking-tight">Second Brain</h1>
@@ -8,9 +10,11 @@
         <button id="mobile-menu-close" class="lg:hidden text-2xl text-gray-400 hover:text-white">&times;</button>
     </header>
 
+    <!-- Navigation links are rendered according to authentication and privileges. -->
     <nav class="flex-1 overflow-y-auto py-6 px-4">
         <ul class="flex flex-col gap-2">
             {% if request.user.is_authenticated %}
+                <!-- Authenticated workspace destinations. -->
                 <li>
                     <a href="{% url 'home' %}" class="block px-4 py-3 rounded-lg transition-all duration-200 {% if active == 'home' %}bg-[var(--active-accent)] bg-opacity-10 text-[var(--text-primary)] border border-[var(--active-accent)] shadow-[var(--glow-active)]{% else %}text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-glass)]{% endif %}">
                         <span class="mr-2 opacity-80">🏠</span> Home
@@ -49,6 +53,7 @@
                     </a>
                 </li>
             {% else %}
+                <!-- Public entry points shown to anonymous visitors. -->
                 <li>
                     <a href="{% url 'login' %}" class="block px-4 py-3 rounded-lg text-[var(--text-primary)] bg-[var(--bg-glass)] hover:bg-opacity-80">
                         <span class="mr-2">🔑</span> Sign In
@@ -63,6 +68,7 @@
         </ul>
     </nav>
 
+    <!-- Signed-in users receive live task-completion statistics. -->
     {% if request.user.is_authenticated %}
     <div class="p-6 border-t border-[var(--border-glass)] relative z-20">
         <div class="flex justify-between items-center mb-2">
@@ -79,6 +85,7 @@
         <p class="text-xs mt-4 text-center opacity-70">Operator: <span class="font-bold text-white">{{ request.user.username }}</span></p>
     </div>
 
+    <!-- Fetch sidebar progress asynchronously so navigation renders immediately. -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {

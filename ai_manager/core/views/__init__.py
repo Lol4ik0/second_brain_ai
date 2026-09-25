@@ -1,3 +1,4 @@
+"""Re-export view callables so the URL configuration has a compact import surface."""
 from .auth import register_view, login_view, logout_view
 from .pages import home_view, ai_chat_view, notes_view, tasks_view, settings_view
 from .api import (api_chat_message, api_save_settings, api_add_task, 

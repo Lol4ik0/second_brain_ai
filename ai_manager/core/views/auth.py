@@ -1,7 +1,11 @@
+"""Authentication page controllers built on Django's standard forms and sessions."""
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
+# Register a new account, establish its authenticated session, or redisplay errors.
+# Parameters: request contains registration form data on POST.
+# Returns: a redirect after successful registration or the registration template.
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -20,6 +24,9 @@ def register_view(request):
         
     return render(request, 'registration/register.html', {'form': form, 'error': error_message})
 
+# Authenticate submitted credentials and create a Django login session on success.
+# Parameters: request contains credentials on POST or renders a blank login form on GET.
+# Returns: a redirect to the dashboard or the login template with validation errors.
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -38,6 +45,9 @@ def login_view(request):
         
     return render(request, 'registration/login.html', {'form': form, 'error': error_message})
 
+# Terminate the current Django session and send the browser to the login page.
+# Parameters: request is the active authenticated or anonymous HTTP request.
+# Returns: an HTTP redirect to the login route.
 def logout_view(request):
     logout(request)
     return redirect('login')

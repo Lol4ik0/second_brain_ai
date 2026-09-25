@@ -1,6 +1,11 @@
+/*
+ * Interactive Obsidian note explorer for loading note bodies and backlinks.
+ * The script calls Django's note-content API, renders the returned Markdown HTML,
+ * and uses delegated events so dynamically inserted wiki links remain navigable.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Core Document Object Model Reference Points
+    // Cache the explorer, reading pane, and backlink region used throughout this page.
     const fileItems = document.querySelectorAll('.file-item');
     const contentArea = document.getElementById('workspace-content-area');
     const mentionsFeed = document.getElementById('linked-mentions-feed');
@@ -8,14 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!contentArea || !mentionsFeed) return;
 
-    /**
-     * Unified Centralized Matrix Loader for Obsidian Vault Notes.
-     * Can be invoked by File Explorer, internal WikiLinks, or Backlink Cards.
-     */
+    // Load one note for requests originating from the file list, a wiki link, or a backlink.
+    // Parameters: noteName is the vault filename without the .md suffix.
+    // Returns: a promise that resolves after the page regions reflect the API result.
     async function loadNoteArchitecture(noteName) {
         if (!noteName) return;
 
-        // 1. Visual Navigation State Sync (Update Left Sidebar Highlight)
+        // Highlight the selected source note before the network request completes.
         fileItems.forEach(item => {
             if (item.getAttribute('data-filename') === noteName) {
                 item.classList.add('text-[var(--text-primary)]', 'bg-[var(--active-accent)]', 'bg-opacity-10', 'shadow-[var(--glow-active)]', 'border', 'border-[var(--active-accent)]', 'border-opacity-20');
@@ -24,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2. Initializing Core Loading Screen Matrix
+        // Provide immediate feedback because note retrieval may take noticeable time.
         contentArea.innerHTML = `
             <div class="flex items-center justify-center h-full">
                 <p class="text-[var(--active-accent)] animate-pulse font-mono text-sm uppercase tracking-widest">
@@ -34,12 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            // 3. Dispatching Request Pipeline to Django Backend API Router
+            // Encode the filename because vault names may contain spaces or Unicode.
             const response = await fetch(`/api/get-note/?name=${encodeURIComponent(noteName)}`);
             const data = await response.json();
 
             if (data.status === 'ok') {
-                // 4. Inject parsed Markdown HTML Content inside main viewport
+                // The API returns rendered Markdown plus backlink metadata for this note.
                 contentArea.innerHTML = `
                     <header class="mb-8 border-b border-[var(--border-glass)] pb-6">
                         <h1 class="text-3xl lg:text-4xl font-bold text-[var(--text-primary)] mb-2 tracking-tight">${noteName}</h1>
@@ -52,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
 
-                // 5. Build and Inject Dynamic Backlinks Entities Layout
+                // Replace stale backlink cards so the right panel matches the new note.
                 mentionsFeed.innerHTML = '';
                 const totalBacklinks = data.backlinks.length;
                 backlinksLabel.textContent = `${totalBacklinks} note${totalBacklinks === 1 ? '' : 's'} link here`;
@@ -76,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
             } else {
-                // Handle Backend Runtime Errors gracefully
+                // Keep server-side lookup/rendering errors inside the reading pane.
                 contentArea.innerHTML = `
                     <div class="p-5 bg-red-500 bg-opacity-10 border border-red-500 border-opacity-20 rounded-xl text-red-400">
                         <h4 class="font-bold mb-1">Core Link Interrupted</h4>
@@ -95,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- INTERACTION PATTERN 1: LEFT SIDEBAR DIRECTORY CLICKS ---
+    // Explorer items are static, so bind their click handlers once at initialization.
     fileItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetNoteName = item.getAttribute('data-filename');
@@ -103,8 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- INTERACTION PATTERN 2: CENTRAL VIEWPORT ADVANCED DELEGATION ---
-    // Listens to WikiLinks dynamically injected into the note body at runtime
+    // Delegate wiki-link clicks because their anchors are injected after each API call.
     contentArea.addEventListener('click', (e) => {
         const wikiLinkAnchor = e.target.closest('.wiki-link');
         if (wikiLinkAnchor) {
@@ -114,8 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- INTERACTION PATTERN 3: RIGHT SIDEBAR BACKLINK CARD CLICKS ---
-    // Listens to dynamic clicks on generated Mentions items cards
+    // Delegate backlink clicks for cards rebuilt whenever another note is loaded.
     mentionsFeed.addEventListener('click', (e) => {
         const backlinkCard = e.target.closest('.backlink-card');
         if (backlinkCard) {
@@ -124,41 +126,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- ОБРАБОТКА ВНЕШНИХ ССЫЛОК ИЗ ЧАТА ---
+    // --- Handle note links opened from the chat context list. ---
     const urlParams = new URLSearchParams(window.location.search);
     const encodedFile = urlParams.get('file');
     console.log("Проверяем наличие внешнего параметра 'file':", encodedFile);
 
     if (encodedFile) {
         try {
-            // Декодируем и чистим имя от пробелов и .md на конце
+            // Decode the requested filename and normalize its optional extension.
             const requestedFile = decodeURIComponent(encodedFile).trim();
             const cleanRequestedName = requestedFile.replace(/\.md$/i, '').trim();
 
             console.log("Пытаемся открыть заметку:", cleanRequestedName);
 
-            // Ищем нужный файл в списке
+            // Match either the canonical data attribute or the visible explorer label.
             const requestedItem = Array.from(fileItems).find(item => {
-                // Пытаемся найти по атрибуту data-filename (чистим от .md)
+                // Prefer the explicit filename attribute, ignoring an optional extension.
                 const dataName = (item.getAttribute('data-filename') || '').replace(/\.md$/i, '').trim();
 
-                // Пытаемся найти по видимому тексту внутри элемента (чистим от пробелов)
+                // Fall back to the displayed text in case a legacy item lacks the attribute.
                 const textName = item.textContent.trim();
 
-                // Если хоть что-то совпало - бинго!
+                // Either representation is sufficient to identify the requested note.
                 return dataName === cleanRequestedName || textName === cleanRequestedName;
             });
 
             if (requestedItem) {
                 console.log("Заметка найдена! Кликаем.");
 
-                // Прокручиваем меню до этого файла
+                // Bring the matching item into view before triggering its normal handler.
                 requestedItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-                // Делаем реальный клик (это запустит загрузку контента и бэклинков)
+                // Reuse the regular click flow to load note content and backlinks.
                 requestedItem.click();
 
-                // Очищаем URL
+                // Remove the one-time parameter so a later reload does not reopen it.
                 const newUrl = new URL(window.location.href);
                 newUrl.searchParams.delete('file');
                 window.history.replaceState({}, document.title, newUrl);

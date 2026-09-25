@@ -1,3 +1,4 @@
+"""JSON endpoints connecting browser interactions to Django models and RAG services."""
 import json
 import os
 import re
@@ -12,9 +13,14 @@ from .. import rag_engine
 @csrf_exempt
 @login_required(login_url='login')
 def api_chat_message(request):
+    # Validate a chat POST, persist both turns, and pass optional file filters to RAG.
+    # Parameters: request contains JSON with a message and selected file names.
+    # Returns: a JSON reply on success, or HTTP 400 when the request is unusable.
     if request.method == "POST":
         data = json.loads(request.body)
         user_message = data.get('message', '')
+        # Accept both current and legacy browser key spellings, then discard
+        # malformed entries before the filenames reach the retrieval layer.
         selected_files = data.get('selected_files', data.get('selectedFiles', []))
         if not isinstance(selected_files, list):
             selected_files = []
@@ -30,6 +36,9 @@ def api_chat_message(request):
 @csrf_exempt
 @login_required(login_url='login')
 def api_save_settings(request):
+    # Persist account identity separately from per-user application preferences.
+    # Parameters: request.body is JSON produced by settings.js.
+    # Returns: JSON status; the RAG cache is reset so subsequent turns use new settings.
     if request.method == "POST":
         data = json.loads(request.body)
         username = data.get('username', data.get('display_name', request.user.username))
@@ -47,6 +56,8 @@ def api_save_settings(request):
         ai_strategy = data.get('ai_strategy', settings.ai_strategy)
         if ai_strategy in {'auto', 'local_only', 'cloud_only'}:
             settings.ai_strategy = ai_strategy
+        # Bound the sampling temperature to the UI's supported range and recover
+        # from malformed client values without rejecting unrelated preferences.
         try:
             temperature = float(data.get('temperature', settings.temperature))
         except (TypeError, ValueError):
@@ -63,6 +74,8 @@ def api_save_settings(request):
 @csrf_exempt
 @login_required(login_url='login')
 def api_add_task(request):
+    # Create a task owned by the authenticated account from the submitted JSON fields.
+    # Returns: JSON containing the new database primary key, or HTTP 400 for other methods.
     if request.method == "POST":
         data = json.loads(request.body)
         task = Task.objects.create(
@@ -78,6 +91,8 @@ def api_add_task(request):
 @csrf_exempt
 @login_required(login_url='login')
 def api_update_task_status(request):
+    # Update only a task belonging to the caller, preventing cross-account task edits.
+    # Returns: JSON success, or a not-found error when the task is not owned by the user.
     if request.method == "POST":
         data = json.loads(request.body)
         try:
@@ -90,7 +105,9 @@ def api_update_task_status(request):
 
 @login_required(login_url='login')
 def api_get_note_content(request):
-    # Твоя большая логика парсинга Obsidian Markdown...
+    # Load a Markdown note, convert Obsidian wiki links, and find inbound mentions.
+    # Parameters: the GET query parameter "name" identifies the requested note.
+    # Returns: rendered HTML and backlink snippets, or a JSON error response.
     from ..rag_engine import get_user_paths
     note_name = request.GET.get('name')
     if not note_name:
@@ -128,6 +145,7 @@ def api_get_note_content(request):
                     except Exception:
                         continue 
 
+        # Convert each Obsidian link while preserving optional display-text aliases.
         def replace_wiki_links(match):
             link_text = match.group(1).strip()
             if '|' in link_text:
@@ -143,6 +161,8 @@ def api_get_note_content(request):
 
 @login_required(login_url='login')
 def api_sidebar_stats(request):
+    # Aggregate the current user's task completion counts for the sidebar indicator.
+    # Returns: JSON with completed, total, and integer percentage values.
     total_tasks = Task.objects.filter(user=request.user).count()
     done_tasks = Task.objects.filter(user=request.user, status='done').count()
     percent = int((done_tasks / total_tasks) * 100) if total_tasks > 0 else 0

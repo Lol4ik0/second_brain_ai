@@ -1,6 +1,12 @@
+/*
+ * Task-board controller for status toggles and modal-based task creation.
+ * It posts small JSON payloads to Django task endpoints, then refreshes the server-
+ * rendered lists so ordering and status grouping remain authoritative.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. Handle Task Checkbox Toggling
+    // A checkbox maps directly to the task's done/todo state; reload after success
+    // so the task moves between the server-rendered active and completed sections.
     const checkboxes = document.querySelectorAll('.task-checkbox');
     checkboxes.forEach(box => {
         box.addEventListener('change', async (e) => {
@@ -15,17 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 if (response.ok) {
-                    // Reload the page to move the task between lists visually
+                    // Reload to reflect server-side grouping and status-dependent markup.
                     window.location.reload(); 
                 }
             } catch (error) {
                 console.error('Error updating task:', error);
-                e.target.checked = !e.target.checked; // Revert visually on error
+                e.target.checked = !e.target.checked; // Restore the previous checkbox state if persistence failed.
             }
         });
     });
 
-    // 2. Handle Adding a New Task via the Modal
+    // Serialize modal fields into the task-creation API and close/reload on success.
     const addTaskForm = document.getElementById('add-task-form');
     if (addTaskForm) {
         addTaskForm.addEventListener('submit', async (e) => {

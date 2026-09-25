@@ -1,31 +1,36 @@
+/*
+ * Settings-page controller for live appearance previews and preference persistence.
+ * It gathers profile, theme, accent, AI strategy, temperature, and vault credentials,
+ * then sends them to the authenticated save-settings JSON endpoint.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const tempSlider = document.getElementById('ai-temperature');
     const tempValue = document.getElementById('temp-value');
     const themeSelect = document.getElementById('theme-select');
     const accentRadios = document.querySelectorAll('input[name="accent-color"]');
 
-    // Update temperature label dynamically
+    // Mirror the range input immediately so users can see the chosen sampling value.
     if (tempSlider && tempValue) {
         tempSlider.addEventListener('input', (e) => {
             tempValue.textContent = e.target.value;
         });
     }
 
-    // Live preview for Theme change
+    // Preview the theme on the root element before the server persists it.
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
             document.documentElement.setAttribute('data-theme', e.target.value);
         });
     }
 
-    // Live preview for Accent Color change
+    // Preview the selected accent token before the next page load.
     accentRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             document.documentElement.setAttribute('data-accent', e.target.value);
         });
     });
 
-    // Create and append the Save Button
+    // Add one page-level save action after the settings sections are rendered.
     const saveBtn = document.createElement('button');
     saveBtn.type = 'button';
     saveBtn.className = 'btn-primary w-full py-3 mt-8 rounded-lg font-bold uppercase tracking-wider text-sm';
@@ -37,13 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
     saveBtn.addEventListener('click', async () => {
         saveBtn.textContent = 'Saving Cores...';
         
-        // Find selected accent color
+        // Read the checked radio because multiple accent choices share one control name.
         let selectedAccent = 'cyan';
         accentRadios.forEach(radio => {
             if (radio.checked) selectedAccent = radio.value;
         });
 
-        // Build Payload
+        // Preserve the API's expected field names in a single JSON request payload.
         const displayName = document.getElementById('display-name')?.value || '';
         const email = document.getElementById('email-address')?.value || '';
         const config = {
@@ -69,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'ok') {
                 saveBtn.textContent = 'Configuration Saved Successfully';
                 
-                // Temporarily override styles for visual feedback
+                // Show transient success feedback without changing the saved settings.
                 saveBtn.style.backgroundColor = 'var(--neon-green)';
                 saveBtn.style.color = '#000';
                 saveBtn.style.borderColor = 'var(--neon-green)';

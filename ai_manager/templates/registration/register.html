@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="cyberpunk" data-accent="cyan">
 <head>
+    <!-- Registration page shares the application's compiled visual theme. -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Second Brain - Establish Operator Identity</title>
@@ -9,9 +10,11 @@
 </head>
 <body class="bg-[#0D0D12] h-screen w-screen flex items-center justify-center relative font-sans overflow-hidden">
     
+    <!-- Ambient accent layers frame the registration card without affecting form flow. -->
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00F0FF] opacity-5 rounded-full blur-[120px]"></div>
     <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#B026FF] opacity-5 rounded-full blur-[120px]"></div>
 
+    <!-- Django registration fields, validation feedback, and submit action. -->
     <main class="w-full max-w-md p-4 relative z-10">
         <div class="glass-card rounded-2xl p-8 shadow-2xl border border-white border-opacity-10">
             <header class="text-center mb-8">
@@ -28,6 +31,7 @@
             <form method="POST" class="flex flex-col gap-5">
                 {% csrf_token %}
                 
+                <!-- Render each bound UserCreationForm field with its own help text. -->
                 {% for field in form %}
                     <div class="flex flex-col gap-1">
                         <label for="{{ field.id_for_label }}" class="text-xs uppercase tracking-wider font-semibold text-gray-300">
@@ -49,6 +53,7 @@
                 </button>
             </form>
 
+            <!-- Existing operators can return to the login route. -->
             <footer class="mt-6 text-center border-t border-white border-opacity-5 pt-4">
                 <p class="text-sm text-gray-400">
                     Already registered? 

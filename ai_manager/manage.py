@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Django command entry point for migrations, checks, and local server operations."""
 import os
 import sys
 
 
 def main():
-    """Run administrative tasks."""
+    """Load the project settings and delegate arguments to Django's CLI dispatcher."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ai_manager.settings')
     try:
         from django.core.management import execute_from_command_line

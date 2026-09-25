@@ -1,3 +1,8 @@
+/*
+ * AI chat page controller for message submission and document-context selection.
+ * It coordinates the modal checkboxes, selected-file preview, local UI history,
+ * and the JSON chat API; retrieval and persistence are handled by Django/RAG.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('.chat-input-form');
     const input = document.getElementById('chat-input');
@@ -17,11 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
         chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
+    // Read the current checkbox state when the user applies context or submits chat.
     function getSelectedFiles() {
         return Array.from(document.querySelectorAll('#document-selector input[type="checkbox"]:checked'))
             .map((checkbox) => checkbox.value);
     }
 
+    // Keep the displayed count and Select All control consistent with file choices.
     function updateSelectedFilesCount() {
         const checkedCount = fileCheckboxes.filter((checkbox) => checkbox.checked).length;
         if (selectedFilesCount) {
@@ -32,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Rebuild the sidebar context list using DOM nodes to avoid interpreting filenames as HTML.
     function renderContextFiles() {
         if (!contextList) return;
         contextList.replaceChildren();
@@ -68,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Toggle modal visibility and prevent background document scrolling while open.
     function setContextModalOpen(isOpen) {
         if (!contextModal) return;
         contextModal.classList.toggle('hidden', !isOpen);
@@ -80,6 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
         checkbox.addEventListener('change', updateSelectedFilesCount);
     });
 
+    // Bulk selection updates every note checkbox, then runs the same counter sync
+    // used by individual file changes.
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', () => {
             fileCheckboxes.forEach((checkbox) => {
@@ -92,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addDocumentsButton) addDocumentsButton.addEventListener('click', () => setContextModalOpen(true));
     if (closeContextModalButton) closeContextModalButton.addEventListener('click', () => setContextModalOpen(false));
     if (contextModalBackdrop) contextModalBackdrop.addEventListener('click', () => setContextModalOpen(false));
+    // Apply remains the commit point: only here is the sidebar context list refreshed.
     if (applyContextButton) {
         applyContextButton.addEventListener('click', () => {
             selectedFiles = getSelectedFiles();
@@ -106,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!form) return;
 
+    // A query initiated from the dashboard is consumed once after navigation.
     const pendingQuery = sessionStorage.getItem('pending_ai_query');
     if (pendingQuery && input) {
         // Clear memory to prevent endless loops on reload
@@ -120,6 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 
+    // Append the user turn optimistically, request an answer, then replace the
+    // temporary assistant status with the response or a connection error.
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -149,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Create a chat bubble for either participant and scroll the feed to the latest turn.
     function appendMessage(sender, text) {
         const id = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         const isAI = sender === 'ai';
@@ -174,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return id;
     }
 
+    // Replace the content of an existing bubble identified by its generated DOM id.
     function updateMessage(id, text) {
         const msgEl = document.getElementById(id);
         if (msgEl) {

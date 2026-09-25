@@ -1,3 +1,7 @@
+# Persistent Django data models for user preferences, tasks, and chat history.
+# UserSettings extends Django's built-in User with per-account UI, AI, and vault
+# configuration; EncryptedCharField protects repository credentials at rest.
+# Signals provision default settings for newly created accounts.
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -6,21 +10,27 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 import base64
 
-# --- SECURITY ENGINE: CUSTOM ENCRYPTION FIELD ---
+# Build the Fernet cipher used by the encrypted repository-token field.
+# The key is derived from Django's SECRET_KEY so deployment configuration is
+# required to decrypt stored credentials.
 def get_fernet():
     """
-    Генерирует уникальный ключ шифрования на основе SECRET_KEY твоего Django проекта.
-    Даже если украдут базу данных, без файла .env расшифровать токены будет невозможно.
+    Derive the credential-encryption key from the current Django SECRET_KEY.
+    A database copy alone is insufficient to decrypt repository tokens.
     """
     key = settings.SECRET_KEY.encode('utf-8')[:32].ljust(32, b'0')
     return Fernet(base64.urlsafe_b64encode(key))
 
 class EncryptedCharField(models.CharField):
+    # Transparently decrypt values read from the database and encrypt values
+    # prepared for persistence, while allowing legacy plaintext rows to load.
     """
     Custom database field that transparently encrypts text when saving and decrypts it when reading in Python.
     This ensures that sensitive data like GitHub tokens are stored securely in the database.
     """
     def from_db_value(self, value, expression, connection):
+        # Convert ciphertext into application text; retain the original value if
+        # it is blank, legacy plaintext, or cannot be decrypted with this key.
         if not value:
             return value
         try:
@@ -29,15 +39,17 @@ class EncryptedCharField(models.CharField):
             return value
 
     def get_prep_value(self, value):
+        # Avoid double-encrypting already encrypted values before database writes.
         if not value:
             return value
         if value.startswith('gAAAAAB'):
             return value
         return get_fernet().encrypt(value.encode('utf-8')).decode('utf-8')
 
-# --- DATABASE MODELS ---
+# The following models represent account preferences, work items, and persisted chat.
 
 class UserSettings(models.Model):
+    # One settings row belongs to exactly one Django account.
     AI_STRATEGY_CHOICES = [
         ('auto', 'Auto-Hybrid'),
         ('local_only', 'Strictly Local'),
@@ -55,9 +67,11 @@ class UserSettings(models.Model):
     github_token = EncryptedCharField(max_length=255, blank=True, default="")
 
     def __str__(self):
+        # Provide a concise identifier for Django admin and diagnostic output.
         return f"Settings for {self.user.username}"
 
 class Task(models.Model):
+    # A user-owned task with workflow status, urgency, optional due date, and tags.
     STATUS_CHOICES = [
         ('todo', 'To Do'),
         ('in_progress', 'In Progress'),
@@ -80,9 +94,11 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        # Include the current workflow state in task representations.
         return f"{self.title} ({self.status})"
     
 class ChatMessage(models.Model):
+    # Store each user or assistant turn so the chat page can restore recent history.
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_messages')
     role = models.CharField(max_length=10) 
     content = models.TextField()
@@ -92,8 +108,11 @@ class ChatMessage(models.Model):
         ordering = ['created_at'] 
 
     def __str__(self):
+        # Keep administrative list labels short while preserving the message role.
         return f"{self.user.username} - {self.role}: {self.content[:20]}"
 
+    # Provision defaults immediately after Django creates a new user so application
+    # views can safely access the related settings row.
 @receiver(post_save, sender=User)
 def create_user_settings(sender, instance, created, **kwargs):
     if created:
