@@ -18,8 +18,8 @@ services:
     build: .
     container_name: second_brain_web
     working_dir: /app/ai_manager
-    # Команда запуска сервера (слушает все адреса на порту 8000)
-    command: python manage.py runserver 0.0.0.0:8000
+    # Collect versioned assets before serving Django through the production WSGI server.
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn ai_manager.wsgi:application --bind 0.0.0.0:8000 --workers 3"
     ports:
       - "8000:8000"
     volumes:
