@@ -22,6 +22,56 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGS_DIR = BASE_DIR / 'logs'
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+# Route AI/vector events and application/Git events to separate weekly log files.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'telemetry': {
+            'format': '[%(levelname)s] %(asctime)s - %(name)s - %(message)s',
+        },
+    },
+    'handlers': {
+        'rag_file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOGS_DIR / 'rag_engine.log',
+            'when': 'W0',
+            'interval': 1,
+            'backupCount': 4,
+            'encoding': 'utf-8',
+            'formatter': 'telemetry',
+        },
+        'system_file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOGS_DIR / 'system.log',
+            'when': 'W0',
+            'interval': 1,
+            'backupCount': 4,
+            'encoding': 'utf-8',
+            'formatter': 'telemetry',
+        },
+    },
+    'loggers': {
+        'core.rag_engine': {
+            'handlers': ['rag_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'core.git_sync': {
+            'handlers': ['system_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'core.views.api': {
+            'handlers': ['system_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 
 # Quick-start development settings - unsuitable for production

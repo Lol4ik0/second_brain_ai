@@ -1,5 +1,6 @@
 """JSON endpoints connecting browser interactions to Django models and RAG services."""
 import json
+import logging
 import os
 import re
 import markdown
@@ -9,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 
 from ..models import Task, ChatMessage
 from .. import rag_engine
+
+logger = logging.getLogger(__name__)
 
 @csrf_exempt
 @login_required(login_url='login')
@@ -66,6 +69,11 @@ def api_save_settings(request):
         settings.github_repo_url = data.get('github_repo_url', settings.github_repo_url).strip()
         settings.github_token = data.get('github_token', settings.github_token).strip()
         settings.save()
+        logger.info(
+            "User settings updated: AI Strategy -> %s; Temperature -> %.1f.",
+            settings.ai_strategy,
+            settings.temperature,
+        )
         
         rag_engine.reset_chat_engine(request.user.id)
         return JsonResponse({'status': 'ok'})
