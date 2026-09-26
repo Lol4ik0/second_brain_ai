@@ -83,12 +83,17 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default-insecure-key-for-dev')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True # os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['*']
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.trycloudflare.com',
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'secondbrain-core.com',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://secondbrain-core.com',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Django application registry: built-in auth/admin infrastructure plus this project app.
 
 INSTALLED_APPS = [

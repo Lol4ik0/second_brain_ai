@@ -35,6 +35,14 @@ services:
     depends_on:
       - db
 
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare_tunnel
+    restart: always
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - web
+
   # Сервис 2: Сборщик стилей (Tailwind)
   tailwind:
     build: .
