@@ -19,7 +19,7 @@ services:
     container_name: second_brain_web
     working_dir: /app/ai_manager
     # Collect versioned assets before serving Django through the production WSGI server.
-    command: bash -c "python manage.py collectstatic --noinput && gunicorn ai_manager.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn ai_manager.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 300"    
     ports:
       - "8000:8000"
     volumes:
@@ -28,8 +28,8 @@ services:
     environment:
       # ВАЖНО: Указываем Django, как найти Ollama на твоем компьютере Windows
       # - OLLAMA_HOST=http://host.docker.internal:11434
-      - OLLAMA_HOST=0.0.0.0:11434
-      - DEBUG=True
+      # - OLLAMA_HOST=0.0.0.0:11434
+      - DEBUG=False
     env_file:
       - .env
     depends_on:
@@ -42,14 +42,6 @@ services:
     command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - web
-
-  embedder:
-    image: ollama/ollama:latest
-    container_name: local_embedder
-    restart: always
-    # Порт наружу не пробрасываем, чтобы доступ был только у контейнера web
-    expose:
-      - "11434"
 
   # Сервис 2: Сборщик стилей (Tailwind)
   tailwind:

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 # for every message; reset_chat_engine invalidates these entries after settings change.
 _user_chat_engines = {}
 _user_indexes = {}
-LOCAL_OLLAMA_URL = "http://192.168.1.128:11434"
+LOCAL_OLLAMA_URL = os.getenv("OLLAMA_HOST", "http://192.168.1.128:11434")
 
 # Use the same 384-dimensional embedding model for indexing and query vectors.
 Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
@@ -35,7 +35,7 @@ Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
 # hardware does not stall normal cloud-backed requests.
 # Parameters: timeout is the HTTP request timeout, in seconds.
 # Returns: True only when the Ollama tags endpoint responds successfully.
-def is_local_ai_ready(timeout=0.5):
+def is_local_ai_ready(timeout=3.0):
     try:
         response = requests.get(f"{LOCAL_OLLAMA_URL}/api/tags", timeout=timeout)
         if response.status_code == 429:
