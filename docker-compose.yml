@@ -43,6 +43,14 @@ services:
     depends_on:
       - web
 
+  embedder:
+    image: ollama/ollama:latest
+    container_name: local_embedder
+    restart: always
+    # Порт наружу не пробрасываем, чтобы доступ был только у контейнера web
+    expose:
+      - "11434"
+
   # Сервис 2: Сборщик стилей (Tailwind)
   tailwind:
     build: .
